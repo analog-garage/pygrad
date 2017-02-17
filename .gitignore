@@ -1,0 +1,13 @@
+
+# Mac OSX
+.DS_Store
+
+# Gradle
+.groovy
+.gradle
+/build/
+
+# Emacs save files
+*~
+
+
