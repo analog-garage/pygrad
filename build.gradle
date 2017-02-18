@@ -59,6 +59,12 @@ javadoc.enabled = false
 // Publish artifacts
 //
 
+publishPlugins.doFirst {
+	// Prevent accidental publication of snapshot version
+	if (version.endsWith('SNAPSHOT'))
+		throw new GradleException('Cannot publish SNAPSHOT version')
+}
+
 pluginBundle {
 	website = 'https://github.com/AnalogDevicesLyricLabs/pygrad'
 	vcsUrl = 'https://github.com/AnalogDevicesLyricLabs/pygrad'
