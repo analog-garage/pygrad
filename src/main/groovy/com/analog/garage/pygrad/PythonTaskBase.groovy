@@ -1,4 +1,4 @@
-/**************************************************************************
+/*------------------------------------------------------------------------
 * Copyright 2017 Analog Devices Inc.
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,16 +12,16 @@
 *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 *   See the License for the specific language governing permissions and
 *   limitations under the License.
-***************************************************************************/
+*--------------------------------------------------------------------------*/
 
-package com.analog.garage.pygrad.base
+package com.analog.garage.pygrad
 
-import static com.analog.garage.pygrad.base.LazyPropertyUtils.*
+import static com.analog.garage.pygrad.LazyPropertyUtils.*
 
 import org.gradle.api.DefaultTask
 import org.gradle.internal.impldep.aQute.bnd.version.MavenVersion
 
-import com.analog.garage.pygrad.base.PythonVirtualEnvSettings
+import com.analog.garage.pygrad.PythonVirtualEnvSettings
 
 /**
  * Base class for python tasks that need to run executable from virtual environment

@@ -1,4 +1,4 @@
-/**************************************************************************
+/*------------------------------------------------------------------------
 * Copyright 2017 Analog Devices Inc.
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,9 +12,30 @@
 *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 *   See the License for the specific language governing permissions and
 *   limitations under the License.
-***************************************************************************/
+*--------------------------------------------------------------------------*/
+
+package com.analog.garage.pygrad
+
+import org.gradle.api.tasks.Input
+
+import com.analog.garage.pygrad.PythonTaskBase
 
 /**
+ * Base class for python tasks that use the python executable.
+ * <p>
  * @author Christopher Barber
  */
-package com.analog.garage.pygrad.standard;
+class PythonExeTaskBase extends PythonTaskBase {
+
+	private Object _pythonExe = null
+	
+	@Input
+	String getPythonExe() {
+		if (_pythonExe == null) {
+			return venv != null ? venv.pythonExe : 'python'
+		}
+		return stringify(_pythonExe) 
+	}
+	void setPythonExe(Object exe) { _pythonExe = exe }
+
+}
