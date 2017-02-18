@@ -18,18 +18,12 @@
 // Plugin configuration
 //
 
-buildscript {
-	repositories {
-		maven { url "https://plugins.gradle.org/m2/" }
-	}
-	dependencies {
-		classpath "gradle.plugin.com.dorongold.plugins:task-tree:1.2.2"
-	}
+plugins {
+	id 'groovy'
+	id 'maven-publish'
+	id 'com.gradle.plugin-publish' version '0.9.7'
+	id 'com.dorongold.task-tree' version '1.2.2'
 }
-
-apply plugin: 'groovy'
-apply plugin: 'maven-publish'
-apply plugin: 'com.dorongold.task-tree'
 
 //---------
 // Project
@@ -58,11 +52,28 @@ task setupEclipse(dependsOn: [copyExternalJars]) {
 	description = 'Setup external libs needed for Eclipse project.'
 }
 
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
+// There is no java to document.
+javadoc.enabled = false
+
+//--------------------
+// Publish artifacts
+//
+
+pluginBundle {
+	website = 'https://github.com/AnalogDevicesLyricLabs/pygrad'
+	vcsUrl = 'https://github.com/AnalogDevicesLyricLabs/pygrad'
+	description = 'A basic python plugin (not stable!)'
+	tags = ['python']
+
+	plugins {
+		basePlugin {
+			id = 'com.analog.garage.pygrad-base'
+			displayName = 'python-base'
+		}
+		standardPlugin {
+			id = 'com.analog.garage.pygrad'
+			displayName = 'pygrad'
 		}
 	}
 }
-  
+

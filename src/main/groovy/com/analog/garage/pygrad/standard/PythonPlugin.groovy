@@ -121,10 +121,6 @@ class PythonPlugin implements Plugin<Project> {
 				setupFile = "$project.python.setupFile"
 				setupArgs = ['develop', '--uninstall']
 			}
-			publishTask.configure {
-				packageName = "$project.python.packageName"
-				distFiles = { distTask.outputFiles }
-			}
 			
 			// Make all tasks using virtual env depend on the default virtual
 			// environment by default.

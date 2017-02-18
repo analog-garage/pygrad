@@ -1,5 +1,5 @@
 # pygrad: a gradle plugin for python tasks
-**Version: 0.1.0**  
+**Version: 0.1.1**  
 *Author: Christopher Barber*  
 *Last updated: 2017-02-17*
 
@@ -16,25 +16,16 @@ It is only necessary to apply one of these plugins.
 
 ## Requirements
 
-Developed using gradle 3.3. It probably will work with earlier versions but I have not tried it and don't promise to support earlier versions.
+Developed using gradle 3.3. It probably will work with earlier 3.x versions but I have not tried it and don't promise to support earlier versions.
 
 Only supports python 3.4 and later. Tasks may work with earlier versions of python if manually configured. In particular, the implementation of the `PythonVirtualEnvTask` depends on python's venv package introduced in 3.3 and modified in 3.4. I am developing using python 3.5, so there may be other dependencies I have missed.
 
 ## Applying the plugin
 
 ~~~groovy
-buildscript {
-  repositories {
-    maven { 
-      url "http://hushsound.lyriclabs.analog.com:8081/artifactory/libs-release-local"
-    }
-  }
-  dependencies {
-    classpath "com.analog.garage:pygrad:0.1.0"
-  }    
+plugins {
+  id 'com.analog.garge.pygrad' version '0.1.1'
 }
-
-apply plugin: 'com.analog.garage.pygrad'
 ~~~  
 
 
