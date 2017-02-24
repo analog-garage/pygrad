@@ -69,7 +69,7 @@ class PythonSetupTask extends PythonExeTaskBase {
 		project.exec {
 			executable = pythonExe
 			args = [setupFile] + setupArgs
-			workingDir = this.workingDir
+			it.workingDir = this.workingDir
 		}
 	}
 	

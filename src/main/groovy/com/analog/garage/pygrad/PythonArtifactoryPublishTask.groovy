@@ -23,7 +23,7 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.*
 
 /**
- * Publish a python distribution to an artifactory repository.
+ * Publish a python distribution to an artifactory repository using HTTP PUT.
  * <p>
  * @author Christopher Barber
  */
@@ -32,7 +32,7 @@ class PythonArtifactoryPublishTask extends DefaultTask {
 	// --- distFiles ---
 	
 	private List<Object> _distFiles = []
-	@InputFile
+	@InputFiles
 	FileCollection getDistFiles() { project.files(_distFiles) }
 	void setDistFiles(Object ... files) {
 		_distFiles.clear()
@@ -45,12 +45,13 @@ class PythonArtifactoryPublishTask extends DefaultTask {
 	// --- packageName ---
 	
 	private Object _packageName
-	@Input getPackageName() { stringize(_packageName) }
+	@Input getPackageName() { stringify(_packageName) }
 	void setPackageName(Object name) { _packageName = name }
 	
 	// --- password
 	
 	private Object _password
+	@Internal
 	String getPassword() { stringify(_password) }
 	void setPassword(Object password) { _password = password }
 
@@ -58,7 +59,7 @@ class PythonArtifactoryPublishTask extends DefaultTask {
 		
 	private Object _repositoryKey
 	@Input
-	String getRepositoryKey() { stringify(_repositoryLey) }
+	String getRepositoryKey() { stringify(_repositoryKey) }
 	void setRepositoryKey(Object key) { _repositoryKey = key }
 	
 	/// --- repositoryUrl ---
@@ -85,20 +86,34 @@ class PythonArtifactoryPublishTask extends DefaultTask {
 		
 		def List<String> errors = []
 		
-		for (distFile in distFiles) {
-			def out = new ByteArrayOutputStream()
-			project.exec {
-				executable = curlExe
-				args = [ '-u', user + ':' + password, '-X', 'PUT',
-					repositoryUrl + '/' + repositoryKey + '/' + packageName + '/' + distFile,
-					'-T', distFile
-				]
-			}
-			def outStr = standardOutput.toString()
-			def result = new groovy.json.JsonSlurper().parseText(outStr)
-			if (result.containsKey('errors')) {
-				errors += result.errors[0].message
-				print outStr
+		// Setup password authentication
+		Authenticator.setDefault(new Authenticator() {
+					protected PasswordAuthentication getPasswordAuthentication() {
+						return new PasswordAuthentication(user, password.toCharArray())
+					}
+				})
+
+		for (File distFile in distFiles) {
+			def url = repositoryUrl + '/' + repositoryKey + '/' + packageName + '/' + distFile.name
+			def con = (HttpURLConnection)new URL(url).openConnection()
+			
+			// Headers
+			con.requestMethod = 'PUT'
+			con.setRequestProperty 'UserAgent', 'pygrad/' + project.version
+			
+			// Upload file
+			con.doOutput = true
+			con.outputStream.withStream { stream -> stream.write distFile.bytes }
+			
+			// read and parse response
+			def responseCode = con.responseCode
+			con.inputStream.withStream { stream ->
+				def outStr = stream.text
+				def  result = new groovy.json.JsonSlurper().parseText(outStr)
+				if (result.containsKey('errors')) {
+					errors += result.errors[0].message
+					print outStr
+				}
 			}
 		}
 		
@@ -106,4 +121,6 @@ class PythonArtifactoryPublishTask extends DefaultTask {
 			throw new GradleException(errors.iterator.join('\n'))
 		}
 	}
+	
+	
 }

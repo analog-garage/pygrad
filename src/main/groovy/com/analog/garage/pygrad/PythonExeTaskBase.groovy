@@ -17,6 +17,7 @@
 package com.analog.garage.pygrad
 
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 
 import com.analog.garage.pygrad.PythonTaskBase
 
@@ -27,6 +28,8 @@ import com.analog.garage.pygrad.PythonTaskBase
  */
 class PythonExeTaskBase extends PythonTaskBase {
 
+	// --- pythonExe ---
+	
 	private Object _pythonExe = null
 	
 	@Input
@@ -37,5 +40,8 @@ class PythonExeTaskBase extends PythonTaskBase {
 		return stringify(_pythonExe) 
 	}
 	void setPythonExe(Object exe) { _pythonExe = exe }
+
+	@Input
+	PythonVirtualEnvSettings getVenv() { super.getVenv() }
 
 }

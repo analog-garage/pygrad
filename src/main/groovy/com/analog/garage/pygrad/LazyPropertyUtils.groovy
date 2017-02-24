@@ -18,6 +18,7 @@ package com.analog.garage.pygrad
 
 import java.io.File
 import java.util.concurrent.Callable
+import org.gradle.api.plugins.ExtraPropertiesExtension
 
 /**
  * Static methods that can be used in implementation of lazy properties.
@@ -43,7 +44,7 @@ class LazyPropertyUtils
 				list.add(obj)
 	}
 
-		/**
+	/**
 	 * Appends objects to list from variable length argument list.
 	 * <p>
 	 * @param list is the list to which objects will be added
@@ -61,6 +62,13 @@ class LazyPropertyUtils
 		for (obj in more)
 			list.add(obj)
 	}
+
+	/**
+	 * True is system properties indicates a variant of the Windows operating system.
+	 */
+	static boolean isOnWindows() {
+		System.properties['os.name'].toLowerCase().contains('windows')
+	}
 	
 	/**
 	 * Returns object or callable result.
@@ -75,10 +83,11 @@ class LazyPropertyUtils
 	/**
 	 * Resolves path relative to root file.
 	 * @param root
-	 * @param path
-	 * @return
+	 * @param path if a {@link Callable} (or closure) replaces with the call result,
+	 * then resolves relative to the root directory
 	 */
 	static File resolveFile(File root, Object path) {
+		path = resolveCallable(path)
 		if (path instanceof File)
 			return path
 		return root.toPath().resolve(path).toFile();
@@ -92,6 +101,24 @@ class LazyPropertyUtils
 	 */
 	static String stringify(Object obj) {
 		resolveCallable(obj).toString()
+	}
+	
+	/**
+	 * Converts value to string or looks up from properties.
+	 * <p>
+	 * If {@code value} is null, it will be replaced by value of {@code propertyName} property
+	 * in {@code ext} or {@code defaultValue} if there is no such property. Returns the
+	 * result of applying {@link #stringify(Object)} to this value.
+	 */
+	static String stringifyWithDefaults(
+		Object value, 
+		ExtraPropertiesExtension ext, 
+		String propertyName, 
+		Object defaultValue)
+	{
+		if (value == null)
+			value = ext.has(propertyName) ? ext.get(propertyName) : defaultValue
+		return stringify(value)
 	}
 	
 	/**

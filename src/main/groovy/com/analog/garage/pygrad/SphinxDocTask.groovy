@@ -27,7 +27,7 @@ import com.analog.garage.pygrad.PythonTaskBase
  * <p>
  * @author Christopher Barber
  */
-class SphinxDocTask extends PythonTaskBase {
+class SphinxDocTask extends PythonModuleTaskBase {
 
 	//------------
 	// Properties
@@ -51,7 +51,7 @@ class SphinxDocTask extends PythonTaskBase {
 	
 	// --- outputDir ---	
 	
-	private Object _outputDir = { new File(project.buildDir, 'python/doc/' + builder) }
+	private Object _outputDir = { -> new File(project.buildDir, 'python/doc/' + builder) }
 	
 	/**
 	 * Directory in which documentation will be generated
@@ -74,25 +74,13 @@ class SphinxDocTask extends PythonTaskBase {
 	File getSourceDir() { project.file(_sourceDir) }
 	void setSourceDir(Object path) { _sourceDir = path }
 	
-	// --- sphinxBuildExe ---
+	//--------------
+	// Construction
+	//
 	
-	private Object _sphinxExe = null
-	
-	/**
-	 * Name or location of sphinx-build executable.
-	 * <p>
-	 * Default is {@link PythonVirtualEnvSettings#getSphinxBuildExe sphinxBuildExe} from
-	 * {@link #venv} if available, else 'sphinx-build'.
-	 */
-	@Input
-	String getSphinxBuildExe() {
-		if (_sphinxExe == null) {
-			return venv != null ? venv.sphinxBuildExe : 'sphinx-build'
-		}
-		return stringify(_sphinxExe) 
+	SphinxDocTask() {
+		super('sphinx')
 	}
-	
-	void setSphinxBuildExe(Object exe) { _sphinxExe = exe }
 
 	//------
 	// Task
@@ -101,8 +89,8 @@ class SphinxDocTask extends PythonTaskBase {
 	@TaskAction
 	runSphinx() {
 		project.exec {
-			executable = sphinxBuildExe
-			args = ['-b', builder, sourceDir, outputDir]
+			executable = pythonExe
+			args = ['-m', module, '-b', builder, sourceDir, outputDir]
 		}
 	}
 }

@@ -16,37 +16,53 @@
 
 package com.analog.garage.pygrad
 
-import static com.analog.garage.pygrad.LazyPropertyUtils.*
+import java.io.File
 
-import org.gradle.api.*
 import org.gradle.api.tasks.*
 
-import com.analog.garage.pygrad.PythonVirtualEnvSettings
-
 /**
- * Base class for python tasks that need to run executable from virtual environment
  * @author Christopher Barber
  */
-abstract class PythonTaskBase extends DefaultTask {
-
-	// --- venv ---
+class DevpiUploadTask extends DevpiTaskBase {
 	
-	private Object _venv = null
+	//------------
+	// Properties
+	//
 	
-	/**
-	 * Python virtual env interface, if any.
-	 * <p>
-	 * This is used to locate modules and python executables used by
-	 * the task actions.
-	 * <p>
-	 * The default is null, but the standard pygrad plugin will automatically 
-	 * configure all tasks of this type from the environm
-	 */
-	@Internal
-	PythonVirtualEnvSettings getVenv() { _venv = resolveCallable(_venv) }
-
-	/**
-	 * Sets {@link #getVenv venv}.
-	 */
-	void setVenv(Object env) { _venv = env }
+	// --- distDir ---
+	
+	private Object _distDir = "$project.buildDir/python/dist"
+	
+	@InputDirectory
+	File getDistDir() { project.file(_distDir) }
+	void setDistDir(Object path) { _distDir = path }
+	
+	// --- setupFile ---
+	
+	protected Object _setupFile = "$project.rootDir/setup.py"
+	
+	@InputFile
+	File getSetupFile() { project.file(_setupFile) }
+	void setSetupFile(Object path) { _setupFile = path }
+	
+	//------
+	// Task
+	//
+	
+	@TaskAction
+	void doUpload() {
+		login()
+		try {
+			use(devpiUrl)
+			
+			project.exec {
+				executable = pythonExe
+				args = ['-m', module, 'upload', '--no-vcs', '--from-dir', distDir]
+				workingDir = setupFile.parent
+			}
+		}
+		finally {
+			logoff()
+		}
+	}
 }

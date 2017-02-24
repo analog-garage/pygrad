@@ -29,7 +29,7 @@ import com.analog.garage.pygrad.PythonTaskBase
  * <p>
  * @author Christopher Barber
  */
-class PythonCoverageTaskBase extends PythonTaskBase {
+class PythonCoverageTaskBase extends PythonModuleTaskBase {
 
 	// --- coverageArgs ---
 	
@@ -48,51 +48,34 @@ class PythonCoverageTaskBase extends PythonTaskBase {
 	
 	private Object _coverageDir = "$project.buildDir/python/coverage"
 	
+	@Internal
 	File getCoverageDir() { project.file(_coverageDir) }
 	void setCoverageDir(Object path) { _coverageDir = path }
 	
 	// --- coverageFile ---
 	
 	private Object _coverageFile = 'python.coverage'
+	@Internal
 	File getCoverageFile() { resolveFile(coverageDir, _coverageFile) }
 	void setCoverageFile(Object path) { _coverageFile = path }
 	
-	// --- coverageExe ---
+	//--------------
+	// Construction
+	//
 	
-	private Object _coverageExe = null
-	
-	/**
-	 * Name or path to python coverage executable.
-	 * <p>
-	 * If not specified, it will be taken from the {@link #getVenv venv}
-	 * @return
-	 */
-	@Input
-	String getCoverageExe() {
-		if (_coverageExe == null) {
-			return venv != null ? venv.coverageExe : 'coverage'
-		}
-		return stringify(_coverageExe) 
+	PythonCoverageTaskBase() {
+		super('coverage')
 	}
-	void setCoverageExe(Object path) { _coverageExe = path }
 	
-	// --- testDir ---
-	
-	private Object _testDir = "$project.rootDir"
-	
-	/**
-	 * Root directory for discovering Python unit tests
-	 * <p>
-	 * Defaults to project's {@link Project.getRootDir rootDir}
-	 */
-	File getTestDir() { project.file(_testDir) }
-	void setTestDir(Object path) { _testDir = path }
+	//------
+	// Task
+	//
 	
 	@TaskAction
 	void runCoverage() {
 		project.exec {
-			executable = coverageExe
-			args = coverageArgs
+			executable = pythonExe
+			args = ['-m', module] + coverageArgs
 			workingDir = coverageDir
 			environment['COVERAGE_FILE'] = coverageFile
 		}

@@ -18,7 +18,11 @@ package com.analog.garage.pygrad
 
 import static com.analog.garage.pygrad.LazyPropertyUtils.*
 
+import java.io.File
+import java.util.List
+
 import org.gradle.api.*
+import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.*
 
 import com.analog.garage.pygrad.PythonExeTaskBase
@@ -43,6 +47,20 @@ class PythonUnitTestTask extends PythonExeTaskBase {
 		addToListFromVarargs1(_testArgs, first, additional)
 	}
 	
+	// --- sourceFiles ---
+	
+	private List<Object> _sourceFiles = []
+	
+	@InputFiles
+	FileCollection getSourceFiles() { project.files(_sourceFiles) }
+	void setSourceFiles(Object ... paths) {
+		_sourceFiles.clear()
+		addToListFromVarargs(_sourceFiles, paths)
+	}
+	void sourceFiles(Object path, Object ... morePaths) {
+		addToListFromVarargs1(_sourceFiles, path, morePaths)
+	}
+	
 	// --- testDir ---
 	
 	private Object _testDir = "$project.rootDir"
@@ -52,9 +70,18 @@ class PythonUnitTestTask extends PythonExeTaskBase {
 	 * <p>
 	 * Defaults to project's {@link Project.getRootDir rootDir}
 	 */
-	@InputDirectory
+	@Input
 	File getTestDir() { project.file(_testDir) }
 	void setTestDir(Object path) { _testDir = path }
+	
+	// --- testFiles ---
+	
+	@InputFiles
+	FileCollection getTestFiles() {
+		project.fileTree(testDir) {
+			include '**/*.py'
+		}
+	}
 	
 	PythonUnitTestTask() {
 		description = 'Run python unit tests'

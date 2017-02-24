@@ -82,7 +82,7 @@ class PythonDistTask extends PythonSetupTask {
 	
 	// --- outputDir ---
 	
-	private Object _outputDir = "$project.buildDir/python/distributions"
+	private Object _outputDir = "$project.buildDir/python/dist"
 	
 	@OutputDirectory
 	File getOutputDir() { project.file(_outputDir) }
@@ -103,14 +103,14 @@ class PythonDistTask extends PythonSetupTask {
 		project.exec {
 			executable = pythonExe
 			args = [setupFile, '--fullname']
-			workingDir = setupFile.parent
+			it.workingDir = setupFile.parent
 			standardOutput = out
 		}
 		def fullname = (out as String).trim()
 		
 		def files = []
 		for (fmt in formats) {
-			files += fullname + extensionForFormat(fmt)
+			files += new File(outputDir, fullname + extensionForFormat(fmt))
 		}
 		project.files(files)
 	}

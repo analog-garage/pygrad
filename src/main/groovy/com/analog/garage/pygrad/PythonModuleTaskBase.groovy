@@ -18,35 +18,48 @@ package com.analog.garage.pygrad
 
 import static com.analog.garage.pygrad.LazyPropertyUtils.*
 
-import org.gradle.api.*
 import org.gradle.api.tasks.*
 
-import com.analog.garage.pygrad.PythonVirtualEnvSettings
-
 /**
- * Base class for python tasks that need to run executable from virtual environment
+ * Base class for python tasks that run a module as a script using -m
+ * <p>
  * @author Christopher Barber
  */
-abstract class PythonTaskBase extends DefaultTask {
+class PythonModuleTaskBase extends PythonExeTaskBase {
 
-	// --- venv ---
+	// --- module ---
 	
-	private Object _venv = null
+	protected Object _module
 	
-	/**
-	 * Python virtual env interface, if any.
-	 * <p>
-	 * This is used to locate modules and python executables used by
-	 * the task actions.
-	 * <p>
-	 * The default is null, but the standard pygrad plugin will automatically 
-	 * configure all tasks of this type from the environm
-	 */
-	@Internal
-	PythonVirtualEnvSettings getVenv() { _venv = resolveCallable(_venv) }
-
-	/**
-	 * Sets {@link #getVenv venv}.
-	 */
-	void setVenv(Object env) { _venv = env }
+	@Input
+	String getModule() { stringify(_module) }
+	void setModule(Object name) { _module = name }
+	
+	// --- requirement ---
+	
+	protected Object _requirement
+	
+	@Input
+	String getRequirement() { stringify(_requirement) }
+	void setRequirement(Object requirement) { _requirement = requirement }
+	
+	//--------------
+	// Construction
+	//
+	
+	PythonModuleTaskBase(Object module, Object requirement) {
+		_module = module
+		_requirement = requirement
+	}
+	
+	PythonModuleTaskBase(Object module) {
+		this(module, module)
+		
+		doFirst {
+			def env = venv
+			if (env != null && env.task != null) {
+				env.task.pipRequire(requirement)
+			}
+		}
+	}
 }

@@ -45,15 +45,23 @@ class PythonVariableFileTask extends DefaultTask
 	// --- outputFile ---
 	
 	private Object _outputFile
-	
+
+	@Optional	
 	@OutputFile
-	File getOutputFile() { return project.file(_outputFile) }
+	File getOutputFile() { 
+		_outputFile = resolveCallable(_outputFile)
+		_outputFile == null ? null : project.file(_outputFile) 
+	}
 	void setOutputFile(Object file) { _outputFile = file }
 	
 	private Map<String, Object> _variables = [:]
 	@Input
 	Map<String, Object> getVariables() {
-		return _variables
+		def map = _variables.clone()
+		for (var in _variables) {
+			map[var.key] = resolveCallable(var.value)
+		}
+		return map
 	}
 	void setVariables(Map<String, Object> vars) {
 		_variables.clear()
@@ -75,7 +83,12 @@ class PythonVariableFileTask extends DefaultTask
 	@TaskAction
 	void generate()
 	{
-		outputFile.withWriter { out ->
+		def file = outputFile
+
+		if (file == null)
+			return
+					
+		file.withWriter { out ->
 			if (header != null) {
 				for (line in header.split('"\\r?\\n')) {
 					if (!line.startsWith('#'))
@@ -87,7 +100,7 @@ class PythonVariableFileTask extends DefaultTask
 			for (var in variables) {
 				out.write(var.key)
 				out.write(' = ')
-				out.write(toPython(var.value))
+				out.write(toPython(resolveCallable(var.value)))
 				out.newLine()
 			}
 		}

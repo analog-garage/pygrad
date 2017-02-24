@@ -35,10 +35,18 @@ class PythonVirtualEnvTask extends DefaultTask {
 
 	// --- pipInstallArgs ---
 	
+	@Internal
 	List<String> getPipInstallArgs() {
 		List<String> args = ['install']
-		for (String requirement in requirements) {
-			args += ['--extra-index-url', requirement]
+		if (!logger.isEnabled(LogLevel.INFO))
+			args += ['-q']
+		for (String index in repositories) {
+			args += ['--extra-index-url', index]
+			// Automatically add --trusted-host for http URLs
+			def m = index =~ '(?i:http)://([^:/]+).*'
+			if (m && m.group(1) != 'localhost') {
+				args += ['--trusted-host', m.group(1)]
+			}
 		}
 		return args
 	}
@@ -103,7 +111,8 @@ class PythonVirtualEnvTask extends DefaultTask {
 
 	// --- venv ---
 	
-	PythonVirtualEnvSettings getVenv() { new PythonVirtualEnvSettings(venvDir) }
+	@Internal
+	PythonVirtualEnvSettings getVenv() { new PythonVirtualEnvSettings(this) }
 	
 	// --- venvDir --- 
 
@@ -140,6 +149,11 @@ class PythonVirtualEnvTask extends DefaultTask {
 	@Input
 	boolean useSymlinks = false
 
+	// --- useSystemSitePackages ---
+	
+	@Input
+	boolean useSystemSitePackages = true
+	
 	//--------------
 	// Construction
 	//
@@ -166,10 +180,27 @@ if sys.hexversion < 0x030400F0:
 ''']
 		}
 		
-		def copyOrSymlink = useSymlinks ? '--symlinks' : '--copies'
+		def venvArgs = ['-m', 'venv']
+		if (useSymlinks)
+			venvArgs += '--symlinks'
+		else
+			venvArgs += '--copies'
+		venvArgs += venvDir
+		
 		project.exec {
 			executable = pythonExe
-			args = ['-m', 'venv', copyOrSymlink, venvDir]
+			args = venvArgs
+		}
+		
+		if (useSystemSitePackages) {
+			// Run again with site packages flag. We cannot use this
+			// the first time because then it won't install pip
+			// see https://bugs.python.org/issue24875
+			venvArgs += '--system-site-packages'
+			project.exec {
+				executable = pythonExe
+				args = venvArgs
+			}
 		}
 
 		def venv = new PythonVirtualEnvSettings(venvDir)
@@ -188,9 +219,10 @@ if sys.hexversion < 0x030400F0:
 	//
 	
 	void pipUpgrade(String pkg) {
+		def installArgs = pipInstallArgs + ['--upgrade', pkg]
 		project.exec {
 			executable = venv.pipExe
-			args = pipInstallArgs + ['--upgrade', pkg]
+			args = installArgs
 		}
 	}
 	
