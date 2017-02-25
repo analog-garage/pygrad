@@ -67,7 +67,7 @@ class LazyPropertyUtils
 	 * True is system properties indicates a variant of the Windows operating system.
 	 */
 	static boolean isOnWindows() {
-		System.properties['os.name'].toLowerCase().contains('windows')
+		System.getProperty('os.name').toLowerCase().contains('windows')
 	}
 	
 	/**

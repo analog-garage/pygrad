@@ -38,8 +38,13 @@ project.group = 'com.analog.garage'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
+repositories {
+	jcenter()
+}
+
 dependencies {
 	compile localGroovy()
+	testCompile 'junit:junit:4.12'
 }
 
 task copyExternalJars(type: Copy) {
