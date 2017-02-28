@@ -82,9 +82,9 @@ class PythonCoverageTask extends PythonCoverageTaskBase {
 	}
 	
 	@Override
-	void runCoverage() {
+	void runTask() {
 		coverageDir.mkdirs() // TODO - implement as dependency?
-		super.runCoverage()
+		super.runTask()
 	}
 
 }

@@ -86,8 +86,8 @@ class SphinxDocTask extends PythonModuleTaskBase {
 	// Task
 	//
 	
-	@TaskAction
-	runSphinx() {
+	@Override
+	void runTask() {
 		project.exec {
 			executable = pythonExe
 			args = ['-m', module, '-b', builder, sourceDir, outputDir]

@@ -18,6 +18,7 @@ package com.analog.garage.pygrad
 
 import static com.analog.garage.pygrad.LazyPropertyUtils.*
 
+import org.gradle.api.Action
 import org.gradle.api.tasks.*
 
 /**
@@ -25,7 +26,7 @@ import org.gradle.api.tasks.*
  * <p>
  * @author Christopher Barber
  */
-class PythonModuleTaskBase extends PythonExeTaskBase {
+abstract class PythonModuleTaskBase extends PythonExeTaskBase {
 
 	// --- module ---
 	
@@ -55,11 +56,22 @@ class PythonModuleTaskBase extends PythonExeTaskBase {
 	PythonModuleTaskBase(Object module) {
 		this(module, module)
 		
-		doFirst {
-			def env = venv
-			if (env != null && env.task != null) {
-				env.task.pipRequire(requirement)
-			}
+		actions = [
+			{ installRequirement() } as Action,
+			{ runTask() } as Action
+		]
+	}
+	
+	//-------
+	// Tasks
+	//
+	
+	void installRequirement() {
+		def env = venv
+		if (env != null && env.task != null) {
+			env.task.pipRequire(requirement)
 		}
 	}
+	
+	abstract void runTask()
 }

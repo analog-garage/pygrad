@@ -76,6 +76,9 @@ class DevpiTaskBase extends PythonModuleTaskBase {
 	// Task	
 	//
 	
+	void runTask() {
+	}
+	
 	void devpi(String ... devpiArgs) {
 		def execArgs = ['-m', module] + (devpiArgs as List)
 		project.exec {

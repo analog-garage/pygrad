@@ -71,6 +71,11 @@ class PythonSetupTask extends PythonExeTaskBase {
 			args = [setupFile] + setupArgs
 			it.workingDir = this.workingDir
 		}
+
+		// Delete unwanted package.egg-info directory from source tree.
+		def name = setupInfo('name')
+		def eggInfoDir = new File(setupFile.parent, name + '.egg-info')
+		project.delete(eggInfoDir)
 	}
 	
 	String setupInfo(String type) {

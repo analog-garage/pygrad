@@ -5,7 +5,10 @@
 # Gradle
 .groovy
 .gradle
-/build/
+**/build/
+
+# Python
+**/__pycache__/
 
 # Emacs save files
 *~

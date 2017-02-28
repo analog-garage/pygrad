@@ -107,8 +107,8 @@ class LazyPropertyUtils
 	 * Converts value to string or looks up from properties.
 	 * <p>
 	 * If {@code value} is null, it will be replaced by value of {@code propertyName} property
-	 * in {@code ext} or {@code defaultValue} if there is no such property. Returns the
-	 * result of applying {@link #stringify(Object)} to this value.
+	 * in {@code ext} or {@code defaultValue} if there is no such property or the property
+	 * has a null value. Returns the result of applying {@link #stringify(Object)} to this value.
 	 */
 	static String stringifyWithDefaults(
 		Object value, 
@@ -116,8 +116,12 @@ class LazyPropertyUtils
 		String propertyName, 
 		Object defaultValue)
 	{
-		if (value == null)
-			value = ext.has(propertyName) ? ext.get(propertyName) : defaultValue
+		if (value == null) {
+			if (ext.has(propertyName))
+				value = ext.get(propertyName)
+			if (value == null)
+				value = defaultValue
+		}
 		return stringify(value)
 	}
 	

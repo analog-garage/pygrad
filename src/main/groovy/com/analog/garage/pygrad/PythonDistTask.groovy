@@ -121,13 +121,6 @@ class PythonDistTask extends PythonSetupTask {
 	
 	PythonDistTask() {
 		setupArgs = ["$distType", '--dist-dir', "$outputDir", { '--formats=' + formats.iterator().join(',') }]
-
-		doLast {
-			// Delete unwanted package.egg-info directory from source tree.
-			def name = setupInfo('name')
-			def eggInfoDir = new File(setupFile.parent, name + '.egg-info')
-			project.delete(eggInfoDir)
-		}
 	}
 	
 	

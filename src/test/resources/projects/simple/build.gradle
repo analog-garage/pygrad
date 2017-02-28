@@ -1,0 +1,19 @@
+plugins {
+	id 'com.analog.garage.pygrad'
+}
+
+// buildscript {
+//   dependencies {
+// 	classpath files('../../../../../build/classes/main')
+// 	classpath files('../../../../../build/resources/main')
+//   }
+// }
+// apply plugin: 'com.analog.garage.pygrad'
+
+
+project.version = '1.2-SNAPSHOT'
+
+python {
+	sourceDir = "$project.rootDir"
+	versionFile = "version.py"
+}

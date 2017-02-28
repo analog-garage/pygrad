@@ -48,13 +48,17 @@ dependencies {
 }
 
 task copyExternalJars(type: Copy) {
-	from configurations.runtime
+	from configurations.runtime, configurations.testCompile
 	into "$buildDir/external-libs"
   }
   
-task setupEclipse(dependsOn: [copyExternalJars]) {
+task setupEclipse(dependsOn: [copyExternalJars, pluginUnderTestMetadata]) {
 	group 'Build Setup'
 	description = 'Setup external libs needed for Eclipse project.'
+	
+	doLast {
+		
+	}
 }
 
 // There is no java to document.

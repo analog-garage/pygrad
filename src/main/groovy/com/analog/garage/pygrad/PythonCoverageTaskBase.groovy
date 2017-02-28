@@ -71,8 +71,8 @@ class PythonCoverageTaskBase extends PythonModuleTaskBase {
 	// Task
 	//
 	
-	@TaskAction
-	void runCoverage() {
+	@Override
+	void runTask() {
 		project.exec {
 			executable = pythonExe
 			args = ['-m', module] + coverageArgs

@@ -74,8 +74,6 @@ class PythonExtension {
 	 * <p>
 	 * Arguments should evaluate to a python package requirements
 	 * specifier as would be passed to {@code pip}.
-	 * <p>
-	 * Defaults to 'coverage' and 'sphinx'.
 	 */
 	Set<String> getBuildRequirements() { stringifySet(_buildRequirements) }
 	
@@ -131,7 +129,7 @@ class PythonExtension {
 	
 	/// --- coverageHtmlDir ---
 	
-	private String _coverageHtmlDir = 'html'
+	private Object _coverageHtmlDir = 'html'
 	
 	/**
 	 * Directory containing generated python html coverage report.
@@ -146,24 +144,60 @@ class PythonExtension {
 	 * @param path either evaluates to an absolute path or else a path relative to the
 	 * python {@link #getCoverageDir coverageDir}.
 	 */
-	void setCoverageHtmlDir(String path) { _coverageHtmlDir = path }
+	void setCoverageHtmlDir(Object path) { _coverageHtmlDir = path }
 
 	// --- devpiIndex ---
 	
 	private Object _devpiIndex = null
+	/**
+	 * Name of devpi index subdirectory.
+	 * <p>
+	 * Defaults to value of {@code devpiIndex} extra project property, or else
+	 * 'dev' if there is no such property.
+	 */
 	String getDevpiIndex() { stringifyWithDefaults(_devpiIndex, project.ext, 'devpiIndex', 'dev') }
+
+	/**
+	 * Sets {@link #getDevpiIndex devpiIndex}
+	 */
 	void setDevpiIndex(Object index) { _devpiIndex = index }
 	
 	// --- devpiPassword ---
 	
 	private Object _devpiPassword = null
+	
+	/**
+	 * Password to use when uploading distribution to local devpi server
+	 * <p>
+	 * Defaults to value of {@code devpiPassword} extra project property,
+	 * or else 'password' if there is no such property. Typically this should
+	 * be configured in the user's {@code ~/.gradle/gradle.properties} file.
+	 * 
+	 * @see #getDevpiUser devpiUser
+	 */
 	String getDevpiPassword() { stringifyWithDefaults(_devpiPassword, project.ext, 'devpiPassword', 'password') }
+
+	/**
+	 * Sets {@link #getDevpiPassword devpiPassword}
+	 */
 	void setDevpiPassword(Object pwd) { _devpiPassword = pwd }
 	
 	// --- devpiPort ---
 	
 	private Object _devpiPort = null
+	
+	/**
+	 * HTTP port of local devpi server.
+	 * <p>
+	 * Defaults to value of {@code devpiPort{} extra project property,
+	 * or else '3141' if there is no such property. Typically this should
+	 * be configured in the user's {@code ~/.gradle/gradle.properties} file.
+	 */
 	String getDevpiPort() { stringifyWithDefaults(_devpiPort, project.ext, 'devpiPort', '3141') }
+	
+	/**
+	 * Sets {@link #getDevpiPort devpiPort}
+	 */
 	void setDevpiPort(Object port) { _devpiPort = port }
 
 	// --- devpiUrl ---
@@ -175,13 +209,40 @@ class PythonExtension {
 	// --- devpiUser ---
 	
 	private Object _devpiUser = null
+
+	/**
+	 * User to use when uploading distribution to local devpi server
+	 * <p>
+	 * Defaults to value of {@code devpiUser} extra project property,
+	 * or else 'password' if there is no such property. Typically this should
+	 * be configured in the user's {@code ~/.gradle/gradle.properties} file.
+	 * 
+	 * @see #getDevpiPassword devpiPassword
+	 */
 	String getDevpiUser() { stringifyWithDefaults(_devpiUser, project.ext, 'devpiUser', 'user') }
+
+	/**
+	 * Sets {@link #getDevpiUser devpiUser}
+	 */
 	void setDevpiUser(Object user) { _devpiUser = user }
 	
 	// --- distDir ---
 	
 	private Object _distDir = { resolveFile(buildDir, "dist") }
+	
+	/**
+	 * Directory for generated python distribution files
+	 * <p>
+	 * Defaults to 'dist/' subdirectory of python {@link #getBuildDir buildDir}.
+	 */
 	File getDistDir() { project.file(_distDir) }
+	
+	/**
+	 * Sets {@link #getDistDir distDir}
+	 * 
+	 * @param path either an absolute path or will be interepreted relative to
+	 * project's {@link Project#rootDir rootDir}.
+	 */
 	void setDistDir(Object path) { _distDir = path }
 
 	// --- docsDir ---
@@ -204,46 +265,19 @@ class PythonExtension {
 
 	// --- docSourceDir ---
 	
-	private Object _docSrcDr = 'doc/python-api'
+	private Object _docSrcDir = 'doc/python-api'
 	
 	/**
 	 * Directory containing python documentation source.
 	 * <p>
 	 * Default is 'doc/python-api/' subdirectory of project {@link Project#rootDir rootDir}.
 	 */
-	File getDocSourceDir() { project.file(_docSrcDr) }
+	File getDocSourceDir() { project.file(_docSrcDir) }
 	
 	/**
 	 * Sets {@link #getDocSourceDir docSourceDir}
 	 */
 	void setDocSourceDir(Object path) { _docSrcDir = path }
-
-	// --- pythonExe ---
-
-	private Object _pythonExe = 'python3'
-	
-	/**
-	 * Name or path of python executable.
-	 * <p>
-	 * This refers to the executable that will be used to configure a python
-	 * virtual environment. It must either be an absolute path or be on the system
-	 * executable path. For full support by this plugin, it must refer to python 3.4
-	 * or later.
-	 * <p>
-	 * Defaults to 'python3'.
-	 */
-	String getPythonExe() { return stringify(_pythonExe) }
-	
-	/**
-	 * Sets {@link #getPythonExe pythonExe}
-	 */
-	void setPythonExe(String path) { _pythonExe = path}
-
-	private File resolveExe(String path) {
-		if (isWindows && !path.toLowerCase().endsWith('.exe'))
-			path = path + '.exe'
-		return resolveFile(venv.binDir, path)
-	}
 
 	// --- packageName ---
 
@@ -267,6 +301,27 @@ class PythonExtension {
 	 * The project containing this extension.
 	 */
 	def final Project project
+
+	// --- pythonExe ---
+
+	private Object _pythonExe = 'python3'
+	
+	/**
+	 * Name or path of python executable.
+	 * <p>
+	 * This refers to the executable that will be used to configure a python
+	 * virtual environment. It must either be an absolute path or be on the system
+	 * executable path. For full support by this plugin, it must refer to python 3.4
+	 * or later.
+	 * <p>
+	 * Defaults to 'python3'.
+	 */
+	String getPythonExe() { return stringify(_pythonExe) }
+	
+	/**
+	 * Sets {@link #getPythonExe pythonExe}
+	 */
+	void setPythonExe(Object path) { _pythonExe = path}
 
 	// --- repositories ---
 	
@@ -297,7 +352,7 @@ class PythonExtension {
 
 	// --- requirements ---
 	
-	private List<String> _requirements = []
+	private List<Object> _requirements = []
 	
 	/**
 	 * Runtime package requirements.
@@ -319,7 +374,7 @@ class PythonExtension {
 	 * Adds to runtime python package {@link #getRequirements requirements} 
 	 */
 	void requirements(Object first, Object ... additional) {
-		addToListFromVarargs1(_requiremenets, first, additional)
+		addToListFromVarargs1(_requirements, first, additional)
 	}
 	
 	/**
@@ -347,6 +402,7 @@ class PythonExtension {
 	
 	// --- sourceDir ---
 	
+	// FIXME - is this really the right default?
 	private Object _sourceDir = "$project.rootDir/src/main/python3"
 	
 	/**
@@ -363,7 +419,9 @@ class PythonExtension {
 	
 	// --- sourceFiles ---
 	
-	private List<Object> _sourceFiles = [{ project.fileTree(dir: sourceDir, include: '**/*.py')}]
+	private List<Object> _sourceFiles = 
+		[{ project.fileTree(dir: sourceDir, include: '**/*.py', 
+			exclude: sourceDir.toPath().relativize(project.buildDir.toPath()).toString() + '/**')}]
 	
 	/**
 	 * Collection of all python source files.
@@ -372,7 +430,9 @@ class PythonExtension {
 	 * <p>
 	 * Used as an input dependency for tasks.
 	 */
-	FileCollection getSourceFiles() { project.files(_sourceFiles) }
+	FileCollection getSourceFiles() {
+		project.files(_sourceFiles)
+	}
 	
 	/**
 	 * Sets {@link #getSourceFiles sourceFiles}.
@@ -460,7 +520,9 @@ class PythonExtension {
 	 * Defaults to null. If specified, configures 'pyversionfile' task
 	 * to generate the specified file.
 	 */
-	File getVersionFile() { project.file(_versionFile) }
+	File getVersionFile() { 
+		_versionFile == null ? null : project.file(_versionFile)
+	}
 	
 	/**
 	 * Sets {@link #getVersionFile versionFile}

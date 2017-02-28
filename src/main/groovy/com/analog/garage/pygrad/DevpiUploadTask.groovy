@@ -49,8 +49,8 @@ class DevpiUploadTask extends DevpiTaskBase {
 	// Task
 	//
 	
-	@TaskAction
-	void doUpload() {
+	@Override
+	void runTask() {
 		login()
 		try {
 			use(devpiUrl)
