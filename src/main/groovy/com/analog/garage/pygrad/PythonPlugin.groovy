@@ -185,19 +185,19 @@ class PythonPlugin implements Plugin<Project> {
 			}
 			sourcesTask.dependsOn versionFileTask
 			
-			project.tasks.forEach {
+			for (t in project.tasks) {
 				// Make all tasks using virtual env depend on the default virtual
 				// environment by default.
-				if (it instanceof PythonTaskBase) {
-					it.dependsOn(venvTask)
-					it.venv = { (venvTask as PythonVirtualEnvTask).venv }
+				if (t instanceof PythonTaskBase) {
+					t.dependsOn(venvTask)
+					t.venv = { (venvTask as PythonVirtualEnvTask).venv }
 				}
 				
-				if (it instanceof DevpiTaskBase) {
-					it.devpiUser = pyext.devpiUser
-					it.devpiPassword = pyext.devpiPassword
-					it.devpiPort = pyext.devpiPort
-					it.devpiIndex = pyext.devpiIndex
+				if (t instanceof DevpiTaskBase) {
+					t.devpiUser = pyext.devpiUser
+					t.devpiPassword = pyext.devpiPassword
+					t.devpiPort = pyext.devpiPort
+					t.devpiIndex = pyext.devpiIndex
 				}
 			}
 		}

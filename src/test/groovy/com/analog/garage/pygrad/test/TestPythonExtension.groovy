@@ -33,12 +33,12 @@ import org.junit.Test
 /**
  * @author Christopher Barber
  */
-class TestPythonExtension {
+class TestPythonExtension extends PygradTestBase {
 
 	@Test
 	void test() {
 		
-		def project = testProjectBuilder('simple').build()
+		def project = testProjectBuilder('simple', folder).build()
 		
 		project.version = '1.2'
 			
