@@ -18,9 +18,12 @@ package com.analog.garage.pygrad
 
 import static com.analog.garage.pygrad.LazyPropertyUtils.*
 
+import org.gradle.StartParameter
 import org.gradle.api.*
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.*
+import org.gradle.external.javadoc.JavadocOfflineLink
+import org.gradle.tooling.internal.gradle.BasicGradleProject
 import org.gradle.util.*
 
 import com.analog.garage.pygrad.PythonVirtualEnvSettings
@@ -37,10 +40,17 @@ class PythonVirtualEnvTask extends DefaultTask {
 	
 	@Internal
 	List<String> getPipInstallArgs() {
+		final boolean offline = project.gradle.startParameter.offline
 		List<String> args = ['install']
 		if (!logger.isEnabled(LogLevel.INFO))
 			args += ['-q']
+		// In offline mode, use minimal timeout and no retries.
+		if (offline)
+			args += ['--timeout', '1', '--retries', '0']
 		for (String index in repositories) {
+			// If offline skip http urls other than localhost
+			if (offline && index ==~ '(?i:https?://(?!localhost[:/]).*)')
+				continue
 			args += ['--extra-index-url', index]
 			// Automatically add --trusted-host for http URLs
 			def m = index =~ '(?i:http)://([^:/]+).*'
