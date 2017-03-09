@@ -19,11 +19,22 @@
 //
 
 plugins {
+	// Apply build-scan first - run build with -Dscan to build with a scan
+	id 'com.gradle.build-scan' version '1.6'
+
+	// Core plugins
 	id 'java-gradle-plugin'
 	id 'groovy'
 	id 'maven-publish'
+	
+	// Community plugins
 	id 'com.gradle.plugin-publish' version '0.9.7'
 	id 'com.dorongold.task-tree' version '1.2.2'
+}
+
+buildScan {
+    licenseAgreementUrl = 'https://gradle.com/terms-of-service'
+    licenseAgree = 'yes'
 }
 
 //---------
