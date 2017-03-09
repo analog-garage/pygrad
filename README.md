@@ -40,6 +40,103 @@ plugins {
 
 for the base version, which does not modify the project.
 
+## Overview
+
+The full plugin adds the following tasks to the project:
+
+task           | description
+-------------- | ---
+pyenv          | Sets up project-specific python virtual environment
+pyversionfile  | Generates version.py file from gradle project version.
+pysources      | Abstract task for dependencies on generated python sources including pyversionfile.
+pydevelop      | Installs link to project source in projects python environment.
+pytest         | Runs python unit tests.
+pycoverage     | Runs python unit tests and generates a coverage data file.
+pycoverageHtml | Generates HTML coverage report, depends on pycoverage.
+pydoc          | Generates sphinx based python documentation.
+pydist         | Builds package distribution files.
+pyuploadLocal  | Uploads python package to devpi server on localhost. Depends on pydist.
+devpiLogin     | Logs into devpi server using credentials from user's gradle.properties.
+
+These may be configured individually but typically should be configured through the `python` extension. Below is a summary showing the default setting for each property. Projects that use the default directory layout will only need to specify package requirements and extra package repositories.
+
+~~~groovy
+python {
+   // Base directory for build artifacts
+   buildDir = "$project.buildDir/python"
+   
+   // Python requirements needed for building/testing but not for runtime distribution.
+   buildRequirements = []
+   
+   // Base directory for python coverage data and reports.
+   coverageDir = "$project.python.buildDir/coverage"
+   
+   // Directory for python HTML coverage report.
+   coverageHtmlDir = "$project.python.coverageDir/html"
+   
+   // Name of index subdirectory for devpi server
+   devpiIndex = 'dev'
+   
+   // Password to use with devpi server. Should come from ~/.gradle/gradle.properties.
+   devpiPassword = 'password'
+   
+   // HTTP port used by devpi server
+   devpiPort = '3141'
+   
+   // Username to use with devpi server. Should come from ~/.gradle/gradle.properties.
+   devpiUser = 'user'
+   
+   // Directory that will contain generated python distribution files.
+   distDir = "$project.python.buildDir/dist"
+   
+   // Root directory for generated python documentation.
+   docsDir = "$project.python.buildDir/docs"
+   
+   // Directory containing sphinx documentation source for python.
+   docSourceDir = "doc/python-api"
+   
+   // Name of python package defined by this project.
+   packageName = "$project.name"
+   
+   // Name or path to python executable used to set up project's virtual environment.
+   pythonExe = 'python3'
+   
+   // Additional python package repositories (i.e package index urls) for downloads.
+   repositories = []
+   
+   // Python requirement strings for packages required by this project.
+   requirements = []
+   
+   // Location of setup.py file used for distribution tasks.
+   setupFile = '$project.python.sourceDir/setup.py'
+   
+   // Root directory for python source code for project.
+   sourceDir = "src/main/python3"
+   
+   // Root directory for python unit test discovery.
+   testDir = "$project.python.sourceDir"
+   
+   // Location of project-specific python virtual environment.
+   venvDir = "$project.python.buildDir/venv"
+   
+   // Python package version, based on project version by default.
+   version = { project.version.replace('-SNAPSHOT', '.dev0') }
+   
+   // Location of python package version.py file, if any.
+   versionFile = null
+}
+~~~
+
+All of the list properties may be appended to by dropping the `=` from the syntax. Furthermore, a single package requirement can be added using the `require` method. For example:
+
+~~~groovy
+python {
+   repositories 'http://myserver/python/repo'
+   require 'numpy>=0.12'
+}
+~~~
+
+
 
 
 
