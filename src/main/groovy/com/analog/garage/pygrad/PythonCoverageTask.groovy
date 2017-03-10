@@ -26,6 +26,8 @@ import org.gradle.api.tasks.*
 
 import com.analog.garage.pygrad.PythonCoverageTaskBase
 
+// TODO - support coverage where tests are not in package directory
+
 /**
  * @author Christopher Barber
  */
