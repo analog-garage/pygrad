@@ -192,7 +192,7 @@ class PythonPlugin implements Plugin<Project> {
 				password = pyext.artifactoryPassword
 				repositoryUrl = pyext.artifactoryBaseUrl
 				repositoryKey = pyext.artifactoryKey
-				distFiles = { pydist.OutputFiles }
+				distFiles = { distTask.outputFiles }
 				packageName = pyext.packageName
 			}
 			
