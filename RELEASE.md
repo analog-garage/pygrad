@@ -1,5 +1,9 @@
 # Releases
 
+### 0.1.7
+
+TBD
+
 ### 0.1.6
 
 - stringify helper now passes through null, stringifyList/Set now ignore null entries
