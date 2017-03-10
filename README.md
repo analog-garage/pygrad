@@ -1,5 +1,5 @@
 # pygrad: a gradle plugin for python tasks
-**Version: 0.1.5**  
+**Version: 0.1.6**  
 *Author: Christopher Barber*  
 *Last updated: 2017-03-09*
 
