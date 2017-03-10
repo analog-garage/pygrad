@@ -47,6 +47,124 @@ class PythonExtension {
 	// Properties
 	//
 
+	// --- artifactoryUrl ---
+	
+	private Object _artifactoryBaseUrl = null
+	
+	/**
+	 * Base URL of artifactory server for publishing packages.
+	 * <p>
+	 * If not set explicitly, returns value of 'artifactoryUrl' project
+	 * property if defined.
+	 */
+	String getArtifactoryBaseUrl() {
+		if (_artifactoryBaseUrl != null)
+			return stringify(_artifactoryBaseUrl)
+		
+		if (project.hasProperty('artifactoryUrl'))
+			return stringify(project.getProperty('artifactoryUrl'))
+			
+		return null
+	}
+	
+	/**
+	 * Sets {@link #getArtifactoryBaseUrl artifactoryBaseUrl}
+	 */
+	void setArtifactoryBaseUrl(Object path) { _artifactoryBaseUrl = path }
+	
+	// --- artifactoryKey
+	
+	private Object _artifactoryKey = 'python-release-local'
+
+	/**
+	 * Artifactory key for the python repository on artifactory server.
+	 * <p>
+	 * This is the subdirectory of the {@link #getArtifactoryBaseUrl artifactoryBaseUrl}
+	 * that is the root of the python package repository.
+	 * <p>
+	 * Defaults to 'python-release-local'
+	 */
+	String getArtifactoryKey() { stringify(_artifactoryKey) }
+	
+	/**
+	 * Sets {@link #getArtifactoryKey artifactoryKey}
+	 */
+	void setArtifactoryKey(Object key) { _artifactoryKey = key }
+	
+	// --- artifactoryUrl ---
+	
+	private Object _artifactoryUrl = null
+	
+	/**
+	 * URL of the artifactory python package repository.
+	 * <p>
+	 * Default is "{@link #getArtifactoryBaseUrl &lt;artifactoryBaseUrl&gt;}/{@link 
+	 * #getArtifactoryKey &lt;artifactoryKey&gt;}".
+	 */
+	String getArtifactoryUrl() {
+		if (_artifactoryUrl != null)
+			return stringify(_artifactoryUrl)
+			
+		return artifactoryBaseUrl + '/' + artifactoryKey
+	}
+	
+	/**
+	 * Sets {@link #getArtifactoryUrl artifactoryUrl}
+	 */
+	void setArtifactoryUrl(Object path) { _artifactoryUrl = path }
+	
+	// --- artifactoryUser ---
+	
+	private Object _artifactoryUser = null
+	
+	/**
+	 * Username for publishing to artifactory repository.
+	 * <p>
+	 * If not set explicitly, this is taken from the 'artifactoryUser' project
+	 * property, if defined. Typically this should come from property in the user's
+	 * ~/.gradle/gradle.properties.
+	 */
+	String getArtifactoryUser() { 
+		if (_artifactoryUser != null)
+			return stringify(_artifactoryUser)
+			
+		if (project.hasProperty('artifactoryUser'))
+			return stringify(project.getProperty('artifactoryUser'))
+			
+		return null
+	}
+	
+	/**
+	 * Sets {@link #getArtifactoryUser artifactoryUser}
+	 */
+	void setArtifactoryUser(Object user) { _artifactoryUser = user }
+
+	// --- artifactoryPassword ---
+	
+	private Object _artifactoryPassword = null
+	
+	/**
+	 * Password for publishing to artifactory repository.
+	 * <p>
+	 * If not set explicitly, this is taken from the 'artifactoryPassword' project
+	 * property, if defined. Typically this should come from property in user's
+	 * ~/.gradle/gradle.properties to keep the password secret.
+	 */
+	String getArtifactoryPassword() {
+		if (_artifactoryPassword != null)
+			return stringify(_artifactoryPassword)
+			
+		if (project.hasProperty('artifactoryPassword'))
+			return project.getProperty('artifactoryPassword')
+			
+		return null
+	}
+	
+	/**
+	 * Sets {@link #getArtifactoryPassword artifactoryPassword}
+	 */
+	void setArtifactoryPassword(Object password) { _artifactoryPassword = password }
+		
 	// --- buildDir ---
 	
 	private Object _buildDir = "${project.buildDir}/python"
@@ -202,6 +320,15 @@ class PythonExtension {
 
 	// --- devpiUrl ---
 	
+	/**
+	 * URL of devpi package index.
+	 * <p>
+	 * This will be:
+	 * <p>
+	 * "http://localhost:{@link #getDevpiPort &lt;devpiPort&gt}/{@link 
+	 * #getDevpiUser &lt;devpiUser&gt;}/{@link
+	 *  #getDevpiIndex &lt;devpiIndex&gt;}"
+	 */
 	String getDevpiUrl() {
 		'http://localhost:' + devpiPort + '/' + devpiUser + '/' + devpiIndex
 	}

@@ -17,6 +17,8 @@
 package com.analog.garage.pygrad
 
 import org.gradle.api.*
+import org.gradle.api.tasks.OutputFiles
+import org.gradle.api.plugins.BasePlugin
 
 /**
  * The standard pygrad plugin.
@@ -43,7 +45,7 @@ import org.gradle.api.*
  */
 class PythonPlugin implements Plugin<Project> {
 	void apply(Project project) {
-		//project.getPluginManager().apply(JavaBasePlugin.class)
+		project.getPluginManager().apply(BasePlugin.class)
 		
 		def pyext = project.extensions.create('python', PythonExtension, project)
 
@@ -116,6 +118,12 @@ class PythonPlugin implements Plugin<Project> {
 			description: 'Creates optional version file if specified',
 			'pyversionfile')
 		
+		def artifactoryPublishTask = project.task(
+			type: PythonArtifactoryPublishTask,
+			group: 'Python',
+			description: 'Publishes python package to artifactory repository',
+			'artifactoryPublishPython')
+		
 		project.afterEvaluate {
 			venvTask.configure
 			{
@@ -176,6 +184,16 @@ class PythonPlugin implements Plugin<Project> {
 				dependsOn distTask
 				distDir = distTask.outputDir
 				setupFile = pyext.setupFile
+			}
+			
+			artifactoryPublishTask.configure {
+				dependsOn distTask
+				user = pyext.artifactoryUser
+				password = pyext.artifactoryPassword
+				repositoryUrl = pyext.artifactoryBaseUrl
+				repositoryKey = pyext.artifactoryKey
+				distFiles = { pydist.OutputFiles }
+				packageName = pyext.packageName
 			}
 			
 			versionFileTask.configure {

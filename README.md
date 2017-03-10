@@ -1,7 +1,7 @@
 # pygrad: a gradle plugin for python tasks
 **Version: 0.1.5**  
 *Author: Christopher Barber*  
-*Last updated: 2017-03-08*
+*Last updated: 2017-03-09*
 
 ## Introduction
 
@@ -57,11 +57,26 @@ pydoc          | Generates sphinx based python documentation.
 pydist         | Builds package distribution files.
 pyuploadLocal  | Uploads python package to devpi server on localhost. Depends on pydist.
 devpiLogin     | Logs into devpi server using credentials from user's gradle.properties.
+artifactoryPublishPython | Uploads python package to artifactory server. Depends on pydist.
 
 These may be configured individually but typically should be configured through the `python` extension. Below is a summary showing the default setting for each property. Projects that use the default directory layout will only need to specify package requirements and extra package repositories.
 
 ~~~groovy
 python {
+   // Base URL of artifactory server.
+   artifactoryBaseUrl = null
+   
+   // Subdirectory of artifactory server holding python package index.
+   artifactoryKey = 'python-release-local'
+   
+   // Full URL to artifactory python package index.
+   artifactoryUrl = "$python.artifactoryBaseUrl/$python.artifactoryKey"
+   
+   // User/password for artifactory uploads. 
+   // Should come from user's ~/.gradle/gradle.properties.
+   artifactoryUser = "$project.artifactoryUser"
+   artifactoryPassword = "$project.artifactoryPassword"
+   
    // Base directory for build artifacts
    buildDir = "$project.buildDir/python"
    
@@ -69,28 +84,27 @@ python {
    buildRequirements = []
    
    // Base directory for python coverage data and reports.
-   coverageDir = "$project.python.buildDir/coverage"
+   coverageDir = "$python.buildDir/coverage"
    
    // Directory for python HTML coverage report.
-   coverageHtmlDir = "$project.python.coverageDir/html"
+   coverageHtmlDir = "$python.coverageDir/html"
    
    // Name of index subdirectory for devpi server
    devpiIndex = 'dev'
    
-   // Password to use with devpi server. Should come from ~/.gradle/gradle.properties.
+   // Username/password to use with devpi server. 
+   // Should come from user's ~/.gradle/gradle.properties.
+   devpiUser = 'user'
    devpiPassword = 'password'
    
    // HTTP port used by devpi server
    devpiPort = '3141'
    
-   // Username to use with devpi server. Should come from ~/.gradle/gradle.properties.
-   devpiUser = 'user'
-   
    // Directory that will contain generated python distribution files.
-   distDir = "$project.python.buildDir/dist"
+   distDir = "$python.buildDir/dist"
    
    // Root directory for generated python documentation.
-   docsDir = "$project.python.buildDir/docs"
+   docsDir = "$python.buildDir/docs"
    
    // Directory containing sphinx documentation source for python.
    docSourceDir = "doc/python-api"
@@ -108,16 +122,16 @@ python {
    requirements = []
    
    // Location of setup.py file used for distribution tasks.
-   setupFile = '$project.python.sourceDir/setup.py'
+   setupFile = '$python.sourceDir/setup.py'
    
    // Root directory for python source code for project.
    sourceDir = "src/main/python3"
    
    // Root directory for python unit test discovery.
-   testDir = "$project.python.sourceDir"
+   testDir = "$python.sourceDir"
    
    // Location of project-specific python virtual environment.
-   venvDir = "$project.python.buildDir/venv"
+   venvDir = "$python.buildDir/venv"
    
    // Python package version, based on project version by default.
    version = { project.version.replace('-SNAPSHOT', '.dev0') }
@@ -131,7 +145,7 @@ All of the list properties may be appended to by dropping the `=` from the synta
 
 ~~~groovy
 python {
-   repositories 'http://myserver/python/repo'
+   repositories devpiUrl, artifactoryUrl
    require 'numpy>=0.12'
 }
 ~~~
