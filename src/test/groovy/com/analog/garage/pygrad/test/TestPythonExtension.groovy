@@ -87,47 +87,44 @@ class TestPythonExtension extends PygradTestBase {
 		
 		// devpiIndex
 		assert 'dev' == python.devpiIndex
-		assert 'http://localhost:3141/user/dev' == python.devpiUrl
 		project.ext.setProperty('devpiIndex', 'index')
 		assert 'index' == python.devpiIndex
-		assert 'http://localhost:3141/user/index' == python.devpiUrl
 		python.devpiIndex = { 'barf' }
 		assert 'barf' == python.devpiIndex
-		project.ext.setProperty('devpiIndex', null)
 		python.devpiIndex = null
+		assert 'index' == python.devpiIndex
+		project.ext.setProperty('devpiIndex', null)
 		assert 'dev' == python.devpiIndex
 		
 		// devpiPassword
-		assert 'password' == python.devpiPassword
+		assert null == python.devpiPassword
 		project.ext.setProperty('devpiPassword', '???')
 		assert '???' == python.devpiPassword
 		python.devpiPassword = { 'barf' }
 		assert 'barf' == python.devpiPassword
 		project.ext.setProperty('devpiPassword', null)
 		python.devpiPassword = null
-		assert 'password' == python.devpiPassword
+		assert null == python.devpiPassword
 		
 		// devpiPort
-		assert '3141' == python.devpiPort
+		assert null == python.devpiPort
 		project.ext.setProperty('devpiPort', '8083')
 		assert '8083' == python.devpiPort
-		assert 'http://localhost:8083/user/dev' == python.devpiUrl
 		python.devpiPort = { '4123' }
 		assert '4123' == python.devpiPort
 		project.ext.setProperty('devpiPort', null)
 		python.devpiPort = null
-		assert '3141' == python.devpiPort
+		assert null == python.devpiPort
 
 		// devpiUser
-		assert 'user' == python.devpiUser
+		assert null == python.devpiUser
 		project.ext.setProperty('devpiUser', 'bob')
 		assert 'bob' == python.devpiUser
-		assert 'http://localhost:3141/bob/dev' == python.devpiUrl
 		python.devpiUser = { 'mary' }
 		assert 'mary' == python.devpiUser
 		project.ext.setProperty('devpiUser', null)
 		python.devpiUser = null
-		assert 'user' == python.devpiUser
+		assert null == python.devpiUser
 		
 		// distDir
 		assert new File(python.buildDir, 'dist') == python.distDir
@@ -225,5 +222,11 @@ class TestPythonExtension extends PygradTestBase {
 		python.versionFile = 'foo/version.py'
 		assert project.file('foo/version.py') == python.versionFile
 		python._versionFile = null
+		
+		// devpiUrl
+		assert null == python.devpiUrl
+		python.devpiUser = 'user'
+		python.devpiPort = '3141'
+		assert 'http://localhost:3141/user/dev' == python.devpiUrl
 	}
 }

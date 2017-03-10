@@ -26,7 +26,7 @@ Add the following to your `build.gradle` script for the full version:
 
 ~~~groovy
 plugins {
-  id 'com.analog.garage.pygrad' version '0.1.5'
+  id 'com.analog.garage.pygrad' version '0.1.6'
 }
 ~~~
 
@@ -34,7 +34,7 @@ or use
 
 ~~~groovy
 plugins {
-  id 'com.analog.garage.pygrad-base' version '0.1.5'
+  id 'com.analog.garage.pygrad-base' version '0.1.6'
 }
 ~~~
 
@@ -90,15 +90,15 @@ python {
    coverageHtmlDir = "$python.coverageDir/html"
    
    // Name of index subdirectory for devpi server
-   devpiIndex = 'dev'
+   devpiIndex = "$project.devpiIndex"
    
    // Username/password to use with devpi server. 
    // Should come from user's ~/.gradle/gradle.properties.
-   devpiUser = 'user'
-   devpiPassword = 'password'
+   devpiUser = "$project.devpiUser"
+   devpiPassword = '$project.devpiPassword'
    
-   // HTTP port used by devpi server
-   devpiPort = '3141'
+   // HTTP port used by devpi server (3141 is a common value)
+   devpiPort = "$project.devpiPort"
    
    // Directory that will contain generated python distribution files.
    distDir = "$python.buildDir/dist"

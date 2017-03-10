@@ -97,10 +97,10 @@ class LazyPropertyUtils
 	 * Converts object to string.
 	 * <p>
 	 * If {@code obj} is a {@link Callable}, replaces it with the call result.
-	 * Then returns result of {@link Object#toString} method.
+	 * Then returns result of {@link Object#toString} method or null if call result was null.
 	 */
 	static String stringify(Object obj) {
-		resolveCallable(obj).toString()
+		resolveCallable(obj)?.toString()
 	}
 	
 	/**
@@ -129,12 +129,15 @@ class LazyPropertyUtils
 	 * Converts objects to set of strings.
 	 * <p>
 	 * Returns a new set resulting from converting each object using
-	 * {@link #stringify}.
+	 * {@link #stringify}, but excluding any null entries.
 	 */
 	static List<String> stringifyList(Iterable<Object> objects) {
 		def newList = new ArrayList<String>()
-		for (obj in objects)
-			newList.add(stringify(obj))
+		for (obj in objects) {
+			def s = stringify(obj)
+			if (s != null)
+				newList.add(s)
+		}
 		return newList
 	}
 	
@@ -142,12 +145,15 @@ class LazyPropertyUtils
 	 * Converts objects to set of strings.
 	 * <p>
 	 * Returns a new set resulting from converting each object using
-	 * {@link #stringify}.
+	 * {@link #stringify}, but excluding any null entries.
 	 */
 	static Set<String> stringifySet(Iterable<Object> objects) {
 		def newSet = new LinkedHashSet<String>(objects.size())
-		for (obj in objects)
-			newSet.add(stringify(obj))
+		for (obj in objects) {
+			def s = stringify(obj)
+			if (s != null)
+				newSet.add(s)
+		}
 		return newSet
 	}
 }

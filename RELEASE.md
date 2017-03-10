@@ -2,7 +2,20 @@
 
 ### 0.1.6
 
-TBD
+- stringify helper now passes through null, stringifyList/Set now ignore null entries
+- null entries to repositories, requirements and buildRequirements are now ignored
+- python.devpiPort, devpiUser and python.devpiPassword default to null if no project property defined
+- python.devpiUrl is null if devpiPort, devpiUser or devpiIndex are null.
+- This allows you to write:
+
+~~~groovy
+python {
+   repositories devpiUrl
+   ...
+}
+~~~
+
+to conditionally use local devpi package index if configured by user's gradle.properties.
 
 ### 0.1.5
 

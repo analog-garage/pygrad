@@ -288,12 +288,12 @@ class PythonExtension {
 	 * Password to use when uploading distribution to local devpi server
 	 * <p>
 	 * Defaults to value of {@code devpiPassword} extra project property,
-	 * or else 'password' if there is no such property. Typically this should
+	 * or else null if there is no such property. Typically this should
 	 * be configured in the user's {@code ~/.gradle/gradle.properties} file.
 	 * 
 	 * @see #getDevpiUser devpiUser
 	 */
-	String getDevpiPassword() { stringifyWithDefaults(_devpiPassword, project.ext, 'devpiPassword', 'password') }
+	String getDevpiPassword() { stringifyWithDefaults(_devpiPassword, project.ext, 'devpiPassword', null) }
 
 	/**
 	 * Sets {@link #getDevpiPassword devpiPassword}
@@ -308,10 +308,11 @@ class PythonExtension {
 	 * HTTP port of local devpi server.
 	 * <p>
 	 * Defaults to value of {@code devpiPort{} extra project property,
-	 * or else '3141' if there is no such property. Typically this should
+	 * or else null if there is no such property. Typically this should
 	 * be configured in the user's {@code ~/.gradle/gradle.properties} file.
+	 * 3141 is a popular value for this port.
 	 */
-	String getDevpiPort() { stringifyWithDefaults(_devpiPort, project.ext, 'devpiPort', '3141') }
+	String getDevpiPort() { stringifyWithDefaults(_devpiPort, project.ext, 'devpiPort', null) }
 	
 	/**
 	 * Sets {@link #getDevpiPort devpiPort}
@@ -328,9 +329,14 @@ class PythonExtension {
 	 * "http://localhost:{@link #getDevpiPort &lt;devpiPort&gt}/{@link 
 	 * #getDevpiUser &lt;devpiUser&gt;}/{@link
 	 *  #getDevpiIndex &lt;devpiIndex&gt;}"
+	 *  <p>
+	 *  as long as the component properties are non-null, otherwise this will be null.
 	 */
 	String getDevpiUrl() {
-		'http://localhost:' + devpiPort + '/' + devpiUser + '/' + devpiIndex
+		def port = devpiPort
+		def user = devpiUser
+		def index = devpiIndex
+		(port && user && index) ? 'http://localhost:' + port + '/' + user + '/' + index : null
 	}
 
 	// --- devpiUser ---
@@ -341,12 +347,12 @@ class PythonExtension {
 	 * User to use when uploading distribution to local devpi server
 	 * <p>
 	 * Defaults to value of {@code devpiUser} extra project property,
-	 * or else 'password' if there is no such property. Typically this should
+	 * or else null if there is no such property. Typically this should
 	 * be configured in the user's {@code ~/.gradle/gradle.properties} file.
 	 * 
 	 * @see #getDevpiPassword devpiPassword
 	 */
-	String getDevpiUser() { stringifyWithDefaults(_devpiUser, project.ext, 'devpiUser', 'user') }
+	String getDevpiUser() { stringifyWithDefaults(_devpiUser, project.ext, 'devpiUser', null) }
 
 	/**
 	 * Sets {@link #getDevpiUser devpiUser}

@@ -101,6 +101,8 @@ class TestLazyPropertyUtils {
 		assertSame s, stringify(s)
 		assert 'hi there' == stringify({ s + ' there' })
 		assert 'hi there' == stringify("$s there")
+		assert null == stringify(null)
+		assert null == stringify({ null })
 	}
 	
 	@Test
@@ -116,11 +118,11 @@ class TestLazyPropertyUtils {
 	
 	@Test
 	void testStringifyList() {
-		assert ['1','2','3'] == stringifyList(['1',2,{ 1+ 2 }])
+		assert ['1','2','3'] == stringifyList(['1',2,{ null }, { 1+ 2 }])
 	}
 
 		@Test
 	void testStringifySet() {
-		assert ['1','2','3'] as Set == stringifySet(['1',2,{ 1+ 2 }])
+		assert ['1','2','3'] as Set == stringifySet(['1',2,{null}, { 1+ 2 }])
 	}
 }
