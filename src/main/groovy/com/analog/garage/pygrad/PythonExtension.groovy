@@ -61,9 +61,12 @@ class PythonExtension {
 		if (_artifactoryBaseUrl != null)
 			return stringify(_artifactoryBaseUrl)
 		
-		if (project.hasProperty('artifactoryUrl'))
-			return stringify(project.getProperty('artifactoryUrl'))
-			
+		if (project.hasProperty('artifactoryUrl')) {
+			def url = project.getProperty('artifactoryUrl')
+			if (url != null)
+				return stringify(url)
+		}
+		
 		return null
 	}
 	
@@ -99,13 +102,17 @@ class PythonExtension {
 	 * URL of the artifactory python package repository.
 	 * <p>
 	 * Default is "{@link #getArtifactoryBaseUrl &lt;artifactoryBaseUrl&gt;}/{@link 
-	 * #getArtifactoryKey &lt;artifactoryKey&gt;}".
+	 * #getArtifactoryKey &lt;artifactoryKey&gt;}". Returns null if either component
+	 * is null.
 	 */
 	String getArtifactoryUrl() {
 		if (_artifactoryUrl != null)
 			return stringify(_artifactoryUrl)
-			
-		return artifactoryBaseUrl + '/' + artifactoryKey
+	
+		def url = artifactoryBaseUrl
+		def key = artifactoryKey
+
+		return (url != null && key != null) ? url + '/' + key : null
 	}
 	
 	/**
@@ -128,9 +135,12 @@ class PythonExtension {
 		if (_artifactoryUser != null)
 			return stringify(_artifactoryUser)
 			
-		if (project.hasProperty('artifactoryUser'))
-			return stringify(project.getProperty('artifactoryUser'))
-			
+		if (project.hasProperty('artifactoryUser')) {
+			def user = project.getProperty('artifactoryUser')
+			if (user != null)
+				return stringify(user)
+		}
+		
 		return null
 	}
 	
@@ -154,8 +164,11 @@ class PythonExtension {
 		if (_artifactoryPassword != null)
 			return stringify(_artifactoryPassword)
 			
-		if (project.hasProperty('artifactoryPassword'))
-			return project.getProperty('artifactoryPassword')
+		if (project.hasProperty('artifactoryPassword')) {
+			def pwd = project.getProperty('artifactoryPassword')
+			if (pwd != null)
+				return stringify(pwd)
+		}
 			
 		return null
 	}
@@ -670,4 +683,18 @@ class PythonExtension {
 		this.project = project
 	}
 
+	//---------
+	// Methods
+	//
+	
+	/**
+	 * Adds artifactory repository package index if not disabled.
+	 * <p>
+	 * This adds {@link #getArtifactoryUrl artifactoryUrl} to repositories for downloading
+	 * unless `noartifactory` project property has been defined.
+	 */
+	void addArtifactoryRepository() {
+		if (!project.hasProperty('noartifactory') || project.getProperty('noartifactory') == null)
+			this.repositories(artifactoryUrl)
+	}
 }

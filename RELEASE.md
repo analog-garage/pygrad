@@ -2,7 +2,7 @@
 
 ### 0.1.7
 
-TBD
+- addArtifactoryRepository method (issue #5)
 
 ### 0.1.6
 

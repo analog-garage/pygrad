@@ -1,7 +1,7 @@
 # pygrad: a gradle plugin for python tasks
 **Version: 0.1.7**  
 *Author: Christopher Barber*  
-*Last updated: 2017-03-10*
+*Last updated: 2017-03-13*
 
 ## Introduction
 
@@ -141,15 +141,27 @@ python {
 }
 ~~~
 
-All of the list properties may be appended to by dropping the `=` from the syntax. Furthermore, a single package requirement can be added using the `require` method. For example:
+All of the list properties may be appended to by dropping the `=` from the syntax. This Furthermore, a single package requirement can be added using the `require` method. For example:
 
 ~~~groovy
 python {
-   repositories devpiUrl, artifactoryUrl
+   repositories devpiUrl
    require 'numpy>=0.12'
 }
 ~~~
 
+There is also a special `addArtifactoryRepository` method that is disabled when the property `noartifactory` is defined:
+
+~~~groovy
+python {
+   addArtifactoryRepository
+   // equivalent to
+   if (!project.hasProperty('noartifactory'))
+       repositories artifactoryUrl
+}
+~~~
+
+This is useful when the artifactory repository is not available temporarily (e.g. when downloading from a laptop outside the firewall).
 
 
 

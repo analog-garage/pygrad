@@ -45,6 +45,47 @@ class TestPythonExtension extends PygradTestBase {
 		def python = new PythonExtension(project)
 		assert python.project == project
 		
+		// artifactoryBaseUrl
+		assert null == python.artifactoryBaseUrl
+		project.ext.setProperty('artifactoryUrl', 'http://frob/repo')
+		assert 'http://frob/repo' == python.artifactoryBaseUrl
+		python.artifactoryBaseUrl = { 'http://somewhere/' + 'repo' }
+		assert 'http://somewhere/repo' == python.artifactoryBaseUrl
+		project.ext.setProperty('artifactoryUrl', null)
+		python.artifactoryBaseUrl = null
+		assert null == python.artifactoryBaseUrl
+		
+		// artifactoryKey
+		assert python.artifactoryKey == 'python-release-local'
+		python.artifactoryKey = { 'altkey' + 3 }
+		assert python.artifactoryKey == 'altkey3'
+		python.artifactoryKey = 'python-release-local'
+		
+		// artifactoryPassword
+		assert null == python.artifactoryPassword
+		project.ext.setProperty('artifactoryPassword', 'password')
+		assert 'password' == python.artifactoryPassword
+		python.artifactoryPassword = { 'foo' + 123 }
+		assert 'foo123' == python.artifactoryPassword
+		project.ext.setProperty('artifactoryPassword', null)
+		python.artifactoryPassword = null
+		assert null == python.artifactoryPassword
+		
+		// artifactoryUser
+		assert null == python.artifactoryUser
+		project.ext.setProperty('artifactoryUser', 'jdoe')
+		assert 'jdoe' == python.artifactoryUser
+		python.artifactoryUser = { 'bob' + 'smith' }
+		assert 'bobsmith' == python.artifactoryUser
+		project.ext.setProperty('artifactoryUser', null)
+		python.artifactoryUser = null
+		assert null == python.artifactoryUser
+		
+		// artifactoryUrl
+		assert null == python.artifactoryUrl
+		python.artifactoryBaseUrl = 'http://somewhere'
+		assert 'http://somewhere/python-release-local' == python.artifactoryUrl
+		
 		// buildDir
 		assert python.buildDir == new File(project.buildDir, 'python')
 		python.buildDir = "$project.buildDir/barf"
@@ -228,5 +269,19 @@ class TestPythonExtension extends PygradTestBase {
 		python.devpiUser = 'user'
 		python.devpiPort = '3141'
 		assert 'http://localhost:3141/user/dev' == python.devpiUrl
+		
+		// addArtifactoryRepository
+		def final noartifactory = 'noartifactory'
+		python.artifactoryUrl = 'http://somewhere.com/artifactory/repo'
+		project.ext.setProperty(noartifactory, '')
+		assert '' == project.getProperty(noartifactory)
+		python.addArtifactoryRepository()
+		assert [] ==  python.repositories
+		project.ext.setProperty(noartifactory, null)
+		assert null == project.getProperty(noartifactory)
+		python.addArtifactoryRepository()
+		assert [python.artifactoryUrl] == python.repositories
+		python.repositories = []
+		python.artifactoryUrl = null
 	}
 }
