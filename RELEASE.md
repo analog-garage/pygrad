@@ -3,6 +3,7 @@
 ### 0.1.7
 
 - addArtifactoryRepository method (issue #5)
+- No longer delete generated "$sourceDir/*project*.egg-info/" subdirectory in PythonSetupTask, so that script entrypoints installed by `pydevelop` will work. Users should add appropriate entry to ignore this directory for their source control system.
 
 ### 0.1.6
 

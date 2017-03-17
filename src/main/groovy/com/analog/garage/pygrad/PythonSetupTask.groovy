@@ -54,10 +54,12 @@ class PythonSetupTask extends PythonExeTaskBase {
 	
 	// --- workingDir ---
 	
-	protected Object _workingDir = { setupFile.parent }
+	protected Object _workingDir = null
 	
 	@Input
-	File getWorkingDir() { project.file(_workingDir) }
+	File getWorkingDir() { 
+		_workingDir != null ? project.file(_workingDir) : setupFile.parentFile
+	}
 	void setWorkingDir(Object path) { _workingDir = path }
 	
 	//------
@@ -71,11 +73,6 @@ class PythonSetupTask extends PythonExeTaskBase {
 			args = [setupFile] + setupArgs
 			it.workingDir = this.workingDir
 		}
-
-		// Delete unwanted package.egg-info directory from source tree.
-		def name = setupInfo('name')
-		def eggInfoDir = new File(setupFile.parent, name + '.egg-info')
-		project.delete(eggInfoDir)
 	}
 	
 	String setupInfo(String type) {
