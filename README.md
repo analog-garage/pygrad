@@ -1,7 +1,7 @@
 # pygrad: a gradle plugin for python tasks
-**Version: 0.1.7**  
+**Version: 0.1.8**  
 *Author: Christopher Barber*  
-*Last updated: 2017-03-13*
+*Last updated: 2017-03-17*
 
 ## Introduction
 
@@ -26,19 +26,11 @@ Add the following to your `build.gradle` script for the full version:
 
 ~~~groovy
 plugins {
-  id 'com.analog.garage.pygrad' version '0.1.7'
+  id 'com.analog.garage.pygrad' version '0.1.8'
 }
 ~~~
 
-or use
-
-~~~groovy
-plugins {
-  id 'com.analog.garage.pygrad-base' version '0.1.7'
-}
-~~~
-
-for the base version, which does not modify the project.
+or use `'com.analog.garage.pygrad-base'` for the base version, which only provides the API but does not add tasks or `python` extension to the project.
 
 ## Overview
 

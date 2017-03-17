@@ -1,5 +1,9 @@
 # Releases
 
+### 0.1.8
+
+TBD
+
 ### 0.1.7
 
 - addArtifactoryRepository method (issue #5)
