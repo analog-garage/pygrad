@@ -2,7 +2,9 @@
 
 ### 0.1.8
 
-TBD
+- Build changes:
+  - Build with gradle 3.0 wrapper
+  - Fix eclipse build path to put test classes in separate tree
 
 ### 0.1.7
 
