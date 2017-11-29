@@ -93,13 +93,13 @@ class TestPythonExtension extends PygradTestBase {
 		python._buildDir = "$project.buildDir/python"
 		
 		// buildRequirements
-		assert [] as Set == python.buildRequirements
+		assert [] == python.buildRequirements
 		python.buildRequirements 'one', 'two'
-		assert ['one', 'two'] as Set == python.buildRequirements
+		assert ['one', 'two'] == python.buildRequirements
 		python.buildRequirements 3
-		assert ['one', 'two', '3'] as Set == python.buildRequirements
+		assert ['one', 'two', '3'] == python.buildRequirements
 		python.buildRequirements = []
-		assert [] as Set == python.buildRequirements
+		assert [] == python.buildRequirements
 		
 		// coverageDir
 		assert new File(python.buildDir, 'coverage') == python.coverageDir
@@ -206,12 +206,12 @@ class TestPythonExtension extends PygradTestBase {
 		assert [] == python.repositories
 		
 		// requirements
-		assert [] as Set == python.requirements
+		assert [] == python.requirements
 		python.require 'coverage'
 		python.requirements ({ "antlr>=4.6" }, 'barf==3.4')
-		assert ['coverage', 'antlr>=4.6', 'barf==3.4'] as Set == python.requirements
+		assert ['coverage', 'antlr>=4.6', 'barf==3.4'] == python.requirements
 		python.requirements = []
-		assert [] as Set == python.requirements
+		assert [] == python.requirements
 		
 		// setupFile
 		assert new File(python.sourceDir, 'setup.py') == python.setupFile

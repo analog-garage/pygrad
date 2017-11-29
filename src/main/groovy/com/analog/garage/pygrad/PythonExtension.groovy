@@ -206,7 +206,7 @@ class PythonExtension {
 	 * Arguments should evaluate to a python package requirements
 	 * specifier as would be passed to {@code pip}.
 	 */
-	Set<String> getBuildRequirements() { stringifySet(_buildRequirements) }
+	List<String> getBuildRequirements() { stringifyList(_buildRequirements) }
 	
 	/**
 	 * Sets {@link #getBuildRequirements buildRequirements}.
@@ -506,7 +506,7 @@ class PythonExtension {
 	 * @see #getBuildRequirements buildRequirements
 	 */
 	@Input
-	Set<String> getRequirements() { stringifySet(_requirements) }
+	List<String> getRequirements() { stringifyList(_requirements) }
 	
 	/**
 	 * Set runtime python package {@link #getRequirements requirements}
