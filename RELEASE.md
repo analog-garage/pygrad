@@ -5,6 +5,7 @@
 - Build changes:
   - Build with gradle 3.0 wrapper
   - Fix eclipse build path to put test classes in separate tree
+  - Use list instead of set for requirements as required by setuptools
 
 ### 0.1.7
 
