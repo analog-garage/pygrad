@@ -23,6 +23,7 @@ import org.gradle.api.*
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.*
 import org.gradle.external.javadoc.JavadocOfflineLink
+import org.gradle.process.ExecResult
 import org.gradle.tooling.internal.gradle.BasicGradleProject
 import org.gradle.util.*
 
@@ -36,6 +37,93 @@ class PythonVirtualEnvTask extends DefaultTask {
 	// Properties
 	//
 
+	// --- condaEnvFile ---
+	
+	private Object _condaEnvFile
+	
+	/**
+	 * When using conda, create environment from specified environment file.
+	 * <p>
+	 * This is only used for the initial environment creation. Any additional
+	 * requirements will be added afterwards. If null, no environment file
+	 * will be used.
+	 */
+	@Optional
+	@Input
+	File getCondaEnvFile() { _condaEnvFile == null ? null : project.file(_condaEnvFile) }
+	void setCondaEnvFile(Object path) { _condaEnvFile = path }
+	
+	// --- condaExe ---
+	
+	private Object _condaExe = 'conda'
+	
+	/**
+	 * Name or path of conda executable to use for generating environment.
+	 * <p>
+	 * This only used if {@link #useConda} is true.
+	 */
+	@Input
+	String getCondaExe() { stringify(_condaExe) }
+	void setCondaExe(Object exe) { _condaExe = exe }
+
+	// --- condaCreateArgs ---
+	
+	/**
+	 * Arguments for creating initial environment using conda
+	 */
+	@Internal
+	List<String> getCondaCreateArgs() {
+		File envFile = condaEnvFile
+		
+		List<String> args = []
+			
+		if (envFile != null) {
+			if (!envFile.exists()) {
+				throw new Error(sprintf('conda environment file %s does not exist', envFile))
+			}				
+			args += ['env', 'create', '--file', envFile]
+		} else {
+			args += ['create', '--yes', '--mkdir', '--no-default-packages']
+		}
+
+		args += ['-p', venvDir]
+				
+		args += ['--quiet']
+		if (logger.isEnabled(LogLevel.INFO)) {
+			args += ['-v']
+			if (logger.isEnabled(LogLevel.DEBUG))
+				args += ['-v']
+		}
+		
+		if (envFile == null) {
+			final boolean offline = project.gradle.startParameter.offline
+			
+			if (offline)
+				args += ['--offline']
+				
+			args += ['python=' + pythonVersion]
+		}
+			
+		return args
+	}
+	
+	@Internal
+	List<String> getCondaInstallArgs() {
+		List<String> args = ['install', '-p', venvDir]
+		
+		args += ['--quiet']
+		if (logger.isEnabled(LogLevel.INFO)) {
+			args += ['-v']
+			if (logger.isEnabled(LogLevel.DEBUG))
+				args += ['-v']
+		}
+
+		if (offline)
+			args += ['--offline']
+			
+		return args
+	}
+	
 	// --- pipInstallArgs ---
 	
 	@Internal
@@ -70,11 +158,26 @@ class PythonVirtualEnvTask extends DefaultTask {
 	 * <p>
 	 * Must refer to an instance of python 3.4 or later (because of dependency
 	 * on python's venv package).
+	 * <p>
+	 * Ignored if {@link #useConda} is true.
 	 */
 	@Input
 	String getPythonExe() { stringify(_pythonExe) }
 	void setPythonExe(Object exe) { _pythonExe = exe }
 
+	// -- pythonVersion ---
+	
+	private Object _pythonVersion = '3.6'
+	
+	/**
+	 * Version of python to use in environment when using conda.
+	 * <p>
+	 * This is ignored if {@link #useConda} is false (the default).
+	 */
+	@Input
+	String getPythonVersion() { stringify(_pythonVersion) }
+	void setPythonVersion(Object version) { _pythonVersion = version }
+	
 	// -- repositories --
 
 	private List<Object> _repositories = []
@@ -147,6 +250,19 @@ class PythonVirtualEnvTask extends DefaultTask {
 		addToListFromVarargs1(_sourceDirs, dir, dirs)
 	}
 	
+	// --- useConda ---
+	
+	/**
+	 * Specifies whether to use conda-based virtual environment.
+	 * <p>
+	 * If true, then the virtual environment will be created using
+	 * conda instead of the Python 3 venv module.
+	 * <p>
+	 * The default is false.
+	 */
+	@Input
+	boolean useConda = false
+	
 	// --- useSymlinks ---
 	
 	/**
@@ -178,8 +294,11 @@ class PythonVirtualEnvTask extends DefaultTask {
 
 	@TaskAction
 	void createVirtualEnv() {
-		def log = Logging.getLogger(getClass())
-		
+		if (useConda) {
+			condaCreate()
+			return
+		}
+			
 		project.exec {
 			executable = pythonExe
 			args = ['-c', '''
@@ -227,6 +346,36 @@ if sys.hexversion < 0x030400F0:
 	//---------
 	// Methods
 	//
+	
+	/**
+	 * Creates environment using conda.
+	 */
+	void condaCreate() {
+		// Create basic environment
+		project.exec {
+			executable = condaExe
+			args = condaCreateArgs
+		}
+		
+		// Then add requirements
+		for (requirement in requirements) {
+			condaInstall(requirement)
+		}
+	}
+	
+	void condaInstall(String requirement) {
+		ExecResult result = project.exec {
+			executable = condaExe
+			args = condaInstallArgs + [requirement]
+			ignoreExitValue = true
+		}
+		
+		if (result.exitValue != 0) {
+			// If conda doesn't work, try pip.
+			// TODO - look at actual error message
+			pipRequire(requirement)
+		}
+	}
 	
 	void pipUpgrade(String pkg) {
 		def installArgs = pipInstallArgs + ['--upgrade', pkg]

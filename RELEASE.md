@@ -2,7 +2,7 @@
 
 ### 0.1.9
 
-TBD
+- Basic support for conda environments
 
 ### 0.1.8
 

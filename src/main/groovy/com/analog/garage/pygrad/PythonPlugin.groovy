@@ -127,7 +127,11 @@ class PythonPlugin implements Plugin<Project> {
 		project.afterEvaluate {
 			venvTask.configure
 			{
+				condaExe = pyext.condaExe
+				useConda = pyext.useConda
+				condaEnvFile = pyext.condaEnvFile
 				pythonExe = pyext.pythonExe
+				pythonVersion = pyext.pythonVersion
 				venvDir = pyext.venvDir
 				requirements pyext.buildRequirements
 				requirements pyext.requirements

@@ -223,6 +223,41 @@ class PythonExtension {
 		addToListFromVarargs1(_buildRequirements, first, additional)
 	}
 
+	// --- condaEnvFile ---
+	
+	private Object _condaEnvFile = null
+	
+	/**
+	 * When using conda, create environment from specified environment file.
+	 * <p>
+	 * This is only used for the initial environment creation. Any additional
+	 * requirements will be added afterwards. If null, no environment file
+	 * will be used.
+	 */
+	File getCondaEnvFile() { _condaEnvFile == null ? null : project.file(_condaEnvFile) }
+	void setCondaEnvFile(Object path) { _condaEnvFile = path }
+	
+	// --- condaExe ---
+	
+	private Object _condaExe = 'conda'
+	
+	/**
+	 * Name or path of conda executable.
+	 * <p>
+	 * This refers to the executable that will be used to configure a python
+	 * virtual environment. It must either be an absolute path or be on the system
+	 * executable path. This will only be used if the venv task is configured to
+	 * use Conda.
+	 * <p>
+	 * Defaults to 'conda'.
+	 */
+	String getCondaExe() { return stringify(_condaExe) }
+	
+	/**
+	 * Sets {@link #getCondaExe condaExe}
+	 */
+	void setCondaExe(Object path) { _condaExe = path}
+
 	// --- coverageDir ---
 	
 	private Object _coverageDir = { resolveFile(buildDir, 'coverage') }
@@ -469,6 +504,18 @@ class PythonExtension {
 	 */
 	void setPythonExe(Object path) { _pythonExe = path}
 
+	// -- pythonVersion ---
+	
+	private Object _pythonVersion = '3.6'
+	
+	/**
+	 * Version of python to use in environment when using conda.
+	 * <p>
+	 * This is ignored when using standard python 3 virtual-env (which is the default).
+	 */
+	String getPythonVersion() { stringify(_pythonVersion) }
+	void setPythonVersion(Object version) { _pythonVersion = version }
+	
 	// --- repositories ---
 	
 	private List<Object> _repositories = []
@@ -611,6 +658,15 @@ class PythonExtension {
 	 */
 	void setTestDir(Object path) { _testDir = path }
 
+	// -- useConda ---
+	
+	/**
+	 * Whether to conda-based virtual environment.
+	 * <p>
+	 * The default is false.
+	 */
+	boolean useConda = false
+	
 	// --- venv ---
 	
 	/**

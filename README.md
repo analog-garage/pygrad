@@ -1,7 +1,7 @@
 # pygrad: a gradle plugin for python tasks
 **Version: 0.1.9**  
 *Author: Christopher Barber*  
-*Last updated: 2018-3-1*
+*Last updated: 2018-3-2*
 
 ## Introduction
 
@@ -75,6 +75,12 @@ python {
    // Python requirements needed for building/testing but not for runtime distribution.
    buildRequirements = []
    
+   // Path to optional conda YAML environment file
+   condaEnvFile = null
+
+   // Name or path of conda executable when useConda is true
+   condaExe = 'conda'
+
    // Base directory for python coverage data and reports.
    coverageDir = "$python.buildDir/coverage"
    
@@ -122,6 +128,9 @@ python {
    // Root directory for python unit test discovery.
    testDir = "$python.sourceDir"
    
+   // Specifies whether to use conda to create virtual environment instead of python3 venv module
+   useConda = false
+
    // Location of project-specific python virtual environment.
    venvDir = "$python.buildDir/venv"
    
