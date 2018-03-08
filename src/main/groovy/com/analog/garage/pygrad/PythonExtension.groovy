@@ -51,8 +51,21 @@ class PythonExtension {
 	
 	private Object _artifactoryApiKey = null
 	
-	String getArtifactoryApiKey() { stringify(_artifactoryApiKey) }
+	String getArtifactoryApiKey() { 
+		if (_artifactoryApiKey != null)
+			return stringify(_artifactoryApiKey)
+		
+		return getArtifactoryProperty('artifactoryApiKey')		
+	}
+	
 	void setArtifactoryApiKey(Object key) { _artifactoryApiKey = key }
+	
+	// --- artifactoryPrefix ---
+	
+	private Object _artifactoryPrefix = ''
+	
+	String getArtifactoryPrefix() { stringify(_artifactoryPrefix) }
+	void setArtifactoryPrefix(Object prefix) { _artifactoryPrefix = prefix }
 	
 	// --- artifactoryUrl ---
 	
@@ -68,13 +81,7 @@ class PythonExtension {
 		if (_artifactoryBaseUrl != null)
 			return stringify(_artifactoryBaseUrl)
 		
-		if (project.hasProperty('artifactoryUrl')) {
-			def url = project.getProperty('artifactoryUrl')
-			if (url != null)
-				return stringify(url)
-		}
-		
-		return null
+		return getArtifactoryProperty('artifactoryUrl')
 	}
 	
 	/**
@@ -84,7 +91,7 @@ class PythonExtension {
 	
 	// --- artifactoryKey
 	
-	private Object _artifactoryKey = 'python-release-local'
+	private Object _artifactoryKey = null
 
 	/**
 	 * Artifactory key for the python repository on artifactory server.
@@ -94,7 +101,18 @@ class PythonExtension {
 	 * <p>
 	 * Defaults to 'python-release-local'
 	 */
-	String getArtifactoryKey() { stringify(_artifactoryKey) }
+	String getArtifactoryKey() { 
+		String key = getArtifactoryProperty('artifactoryPythonKey')
+		
+		if (key != null)
+			return key
+			
+		key = stringify(_artifactoryKey) 
+		if (key != null)
+			return key
+			
+		return 'python-release-local'
+	}
 	
 	/**
 	 * Sets {@link #getArtifactoryKey artifactoryKey}
@@ -141,14 +159,8 @@ class PythonExtension {
 	String getArtifactoryUser() { 
 		if (_artifactoryUser != null)
 			return stringify(_artifactoryUser)
-			
-		if (project.hasProperty('artifactoryUser')) {
-			def user = project.getProperty('artifactoryUser')
-			if (user != null)
-				return stringify(user)
-		}
 		
-		return null
+		return getArtifactoryProperty('artifactoryUser')
 	}
 	
 	/**
@@ -171,13 +183,7 @@ class PythonExtension {
 		if (_artifactoryPassword != null)
 			return stringify(_artifactoryPassword)
 			
-		if (project.hasProperty('artifactoryPassword')) {
-			def pwd = project.getProperty('artifactoryPassword')
-			if (pwd != null)
-				return stringify(pwd)
-		}
-			
-		return null
+		return getArtifactoryProperty('artifactoryPassword')
 	}
 	
 	/**
@@ -759,5 +765,18 @@ class PythonExtension {
 	void addArtifactoryRepository() {
 		if (!project.hasProperty('noartifactory') || project.getProperty('noartifactory') == null)
 			this.repositories(artifactoryUrl)
+	}
+	
+	private String getArtifactoryProperty(String propName)
+	{
+		propName = artifactoryPrefix + propName
+		
+		if (project.hasProperty(propName)) {
+			def value = project.getProperty(propName)
+			if (value != null)
+				return stringify(value)
+		}
+		
+		return null
 	}
 }

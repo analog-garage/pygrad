@@ -82,7 +82,6 @@ class PythonArtifactoryPublishTask extends DefaultTask {
 	/// --- user ---
 	
 	private Object _user
-	@Input
 	String getUser() { stringify(_user) }
 	void setUser(Object user) { _user = user }
 	
@@ -99,7 +98,7 @@ class PythonArtifactoryPublishTask extends DefaultTask {
 		def useApiKey = apiKey != null
 		
 		if (!useApiKey) {
-		// Setup password authentication
+			// Setup password authentication
 			Authenticator.setDefault(new Authenticator() {
 						protected PasswordAuthentication getPasswordAuthentication() {
 							return new PasswordAuthentication(user, password.toCharArray())
