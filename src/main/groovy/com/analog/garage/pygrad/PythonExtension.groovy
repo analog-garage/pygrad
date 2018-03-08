@@ -47,6 +47,13 @@ class PythonExtension {
 	// Properties
 	//
 
+	// --- apiKey ---
+	
+	private Object _artifactoryApiKey = null
+	
+	String getArtifactoryApiKey() { stringify(_artifactoryApiKey) }
+	void setArtifactoryApiKey(Object key) { _artifactoryApiKey = key }
+	
 	// --- artifactoryUrl ---
 	
 	private Object _artifactoryBaseUrl = null

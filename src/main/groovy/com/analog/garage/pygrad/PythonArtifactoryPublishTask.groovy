@@ -17,7 +17,9 @@
 package com.analog.garage.pygrad
 
 import static com.analog.garage.pygrad.LazyPropertyUtils.*
+import static org.gradle.api.logging.Logging.*;
 
+import java.util.logging.Logger
 import org.gradle.api.*
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.*
@@ -28,6 +30,14 @@ import org.gradle.api.tasks.*
  * @author Christopher Barber
  */
 class PythonArtifactoryPublishTask extends DefaultTask {
+	
+	// --- apiKey ---
+	
+	private Object _apiKey = null
+	
+	@Internal
+	String getApiKey() { stringify(_apiKey) }
+	void setApiKey(Object key) { _apiKey = key }
 	
 	// --- distFiles ---
 	
@@ -84,22 +94,31 @@ class PythonArtifactoryPublishTask extends DefaultTask {
 	void publish() {
 		// See https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API
 		
+		def logger = getLogger();
 		def List<String> errors = []
+		def useApiKey = apiKey != null
 		
+		if (!useApiKey) {
 		// Setup password authentication
-		Authenticator.setDefault(new Authenticator() {
-					protected PasswordAuthentication getPasswordAuthentication() {
-						return new PasswordAuthentication(user, password.toCharArray())
-					}
-				})
+			Authenticator.setDefault(new Authenticator() {
+						protected PasswordAuthentication getPasswordAuthentication() {
+							return new PasswordAuthentication(user, password.toCharArray())
+						}
+					})
+		}
 
 		for (File distFile in distFiles) {
 			def url = repositoryUrl + '/' + repositoryKey + '/' + packageName + '/' + distFile.name
 			def con = (HttpURLConnection)new URL(url).openConnection()
 			
+			logger.info(String.format("Upload using %s to %s\n", useApiKey ? "API key" : "password", url));
+
 			// Headers
 			con.requestMethod = 'PUT'
 			con.setRequestProperty 'UserAgent', 'pygrad/' + project.version
+			if (useApiKey) {
+				con.setRequestProperty('X-JFrog-Art-Api', apiKey)
+			}
 			
 			// Upload file
 			con.doOutput = true

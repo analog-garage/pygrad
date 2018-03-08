@@ -192,6 +192,7 @@ class PythonPlugin implements Plugin<Project> {
 			
 			artifactoryPublishTask.configure {
 				dependsOn distTask
+				apiKey = pyext.artifactoryApiKey
 				user = pyext.artifactoryUser
 				password = pyext.artifactoryPassword
 				repositoryUrl = pyext.artifactoryBaseUrl
