@@ -1,5 +1,5 @@
 /*------------------------------------------------------------------------
-* Copyright 2017 Analog Devices Inc.
+* Copyright 2017-2018 Analog Devices Inc.
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -51,6 +51,17 @@ class PythonExtension {
 	
 	private Object _artifactoryApiKey = null
 	
+	/**
+	 * API key for use in {@code artifactoryPublishPython} task.
+	 * <p>
+	 * If specified, this will be used in place of user/password authentication.
+	 * <p>
+	 * If not specified explicitly, its value will be taken from the property
+	 * with name {@link #artifactoryPrefix} + {@code 'artifactoryApiKey'}, 
+	 * which typically should be defined in the user's {@code gradle.properties} file.
+	 * <p>
+	 * @since 0.1.9
+	 */
 	String getArtifactoryApiKey() { 
 		if (_artifactoryApiKey != null)
 			return stringify(_artifactoryApiKey)
@@ -64,6 +75,18 @@ class PythonExtension {
 	
 	private Object _artifactoryPrefix = ''
 	
+	/**
+	 * Prefix for artifactory related global properties.
+	 * <p>
+	 * This is prepended to the property names used by {@link #artifactoryUser},
+	 * {@link #artifactoryPassword}, {@link #artifactoryPythonKey} and {@link #artifactoryApiKey}.
+	 * It can be used to support multiple artifactory configurations with different 
+	 * authentication information.
+	 * <p>
+	 * The default is the empty string ''.
+	 * <p>
+	 * @since 0.1.9
+	 */
 	String getArtifactoryPrefix() { stringify(_artifactoryPrefix) }
 	void setArtifactoryPrefix(Object prefix) { _artifactoryPrefix = prefix }
 	
@@ -74,8 +97,12 @@ class PythonExtension {
 	/**
 	 * Base URL of artifactory server for publishing packages.
 	 * <p>
-	 * If not set explicitly, returns value of 'artifactoryUrl' project
-	 * property if defined.
+	 * This is the root directory for all repositories on the artifactory server,
+	 * not just the python repository.
+	 * <p>
+	 * If not set explicitly, returns value of
+	 * property with name {@link #artifactoryPrefix} + {@code 'artifactoryUrl'},
+	 * which typically should be defined in the user or project {@code gradle.properties} file.
 	 */
 	String getArtifactoryBaseUrl() {
 		if (_artifactoryBaseUrl != null)
@@ -98,6 +125,9 @@ class PythonExtension {
 	 * <p>
 	 * This is the subdirectory of the {@link #getArtifactoryBaseUrl artifactoryBaseUrl}
 	 * that is the root of the python package repository.
+	 * <p>
+	 * If not set explicitly, returns value of property with name
+	 * {@link #artifactoryPrefix} + {@code 'artifactoryPythonKey'}.
 	 * <p>
 	 * Defaults to 'python-release-local'
 	 */
@@ -152,9 +182,9 @@ class PythonExtension {
 	/**
 	 * Username for publishing to artifactory repository.
 	 * <p>
-	 * If not set explicitly, this is taken from the 'artifactoryUser' project
-	 * property, if defined. Typically this should come from property in the user's
-	 * ~/.gradle/gradle.properties.
+	 * If not specified explicitly, its value will be taken from the property
+	 * with name {@link #artifactoryPrefix} + {@code 'artifactoryUser'}, 
+	 * which typically should be defined in the user's {@code gradle.properties} file.
 	 */
 	String getArtifactoryUser() { 
 		if (_artifactoryUser != null)
@@ -175,9 +205,14 @@ class PythonExtension {
 	/**
 	 * Password for publishing to artifactory repository.
 	 * <p>
-	 * If not set explicitly, this is taken from the 'artifactoryPassword' project
-	 * property, if defined. Typically this should come from property in user's
-	 * ~/.gradle/gradle.properties to keep the password secret.
+	 * <p>
+	 * If not specified explicitly, its value will be taken from the property
+	 * with name {@link #artifactoryPrefix} + {@code 'artifactoryPassword'}, 
+	 * which typically should be defined in the user's {@code gradle.properties} file.
+	 * <p>
+	 * It is usually better to use an API key for authentication instead of user/password,
+	 * especially if the server supports LDAP and the password is not specific to Artifactory.
+	 * @see #artifactoryApiKey
 	 */
 	String getArtifactoryPassword() {
 		if (_artifactoryPassword != null)
@@ -246,6 +281,10 @@ class PythonExtension {
 	 * This is only used for the initial environment creation. Any additional
 	 * requirements will be added afterwards. If null, no environment file
 	 * will be used.
+	 * <p>
+	 * Ignored if {@link #useConda} is false.
+	 * 
+	 * @since 0.1.9
 	 */
 	File getCondaEnvFile() { _condaEnvFile == null ? null : project.file(_condaEnvFile) }
 	void setCondaEnvFile(Object path) { _condaEnvFile = path }
@@ -263,6 +302,8 @@ class PythonExtension {
 	 * use Conda.
 	 * <p>
 	 * Defaults to 'conda'.
+	 * 
+	 * @since 0.1.9
 	 */
 	String getCondaExe() { return stringify(_condaExe) }
 	
@@ -525,6 +566,10 @@ class PythonExtension {
 	 * Version of python to use in environment when using conda.
 	 * <p>
 	 * This is ignored when using standard python 3 virtual-env (which is the default).
+	 * <p>
+	 * Default is '3.6'.
+	 * 
+	 * @since 0.1.9
 	 */
 	String getPythonVersion() { stringify(_pythonVersion) }
 	void setPythonVersion(Object version) { _pythonVersion = version }
@@ -677,6 +722,8 @@ class PythonExtension {
 	 * Whether to conda-based virtual environment.
 	 * <p>
 	 * The default is false.
+	 * 
+	 * @since 0.1.9
 	 */
 	boolean useConda = false
 	

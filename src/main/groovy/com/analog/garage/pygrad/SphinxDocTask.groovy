@@ -1,5 +1,5 @@
 /*------------------------------------------------------------------------
-* Copyright 2017 Analog Devices Inc.
+* Copyright 2017-2018 Analog Devices Inc.
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import com.analog.garage.pygrad.PythonTaskBase
 
 /**
  * Task generates python documentation using sphinx-build program
+ * <p>
+ * This will automatically install sphinx, if necessary.
  * <p>
  * @author Christopher Barber
  */

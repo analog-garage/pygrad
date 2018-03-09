@@ -1,5 +1,5 @@
 /*------------------------------------------------------------------------
-* Copyright 2017 Analog Devices Inc.
+* Copyright 2017-2018 Analog Devices Inc.
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -36,9 +36,10 @@ import org.gradle.api.plugins.BasePlugin
  * <li>pycoverage - runs python unit tests while measuring code coverage
  * <li>pycoverageReport - outputs report of python code coverage
  * <li>pycoverageHTML - generates HTML reports of python code coverage
- * <li>pydoc - generates python API documentation
+ * <li>pydoc - generates python API documentation (using sphinx)
  * <li>pydist - generates python package distribution file(s)
  * <li>pyuploadLocal - uploads python package to local devpi repository
+ * <li>artifactoryPublishPython - uploads package to Artifactory hosted pypi repository
  * </ul>
  * <p>
  * @author Christopher Barber

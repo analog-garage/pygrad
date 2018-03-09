@@ -1,5 +1,5 @@
 /*------------------------------------------------------------------------
-* Copyright 2017 Analog Devices Inc.
+* Copyright 2017-2018 Analog Devices Inc.
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -31,6 +31,14 @@ import com.analog.garage.pygrad.PythonVirtualEnvSettings
 
 import org.gradle.api.logging.*
 
+/**
+ * Task creates Python virtual environment in build subdirectory.
+ * <p>
+ * This will create a conda environment if {@link #useConda} is true, and
+ * otherwise will use the Python venv module and pip.
+ * <p>
+ * @author Christopher Barber
+ */
 class PythonVirtualEnvTask extends DefaultTask {
 
 	//------------
@@ -47,6 +55,10 @@ class PythonVirtualEnvTask extends DefaultTask {
 	 * This is only used for the initial environment creation. Any additional
 	 * requirements will be added afterwards. If null, no environment file
 	 * will be used.
+	 * <p>
+	 * Ignored if {@link #useConda} is false.
+	 * 
+	 * @since 0.1.9
 	 */
 	@Optional
 	@Input
@@ -60,7 +72,11 @@ class PythonVirtualEnvTask extends DefaultTask {
 	/**
 	 * Name or path of conda executable to use for generating environment.
 	 * <p>
+	 * Default is 'conda'
+	 * <p>
 	 * This only used if {@link #useConda} is true.
+	 * 
+	 * @since 0.1.9
 	 */
 	@Input
 	String getCondaExe() { stringify(_condaExe) }
@@ -107,6 +123,9 @@ class PythonVirtualEnvTask extends DefaultTask {
 		return args
 	}
 	
+	/**
+	 * Arguments for installing a package using conda.
+	 */
 	@Internal
 	List<String> getCondaInstallArgs() {
 		List<String> args = ['install', '-p', venvDir]
@@ -173,7 +192,13 @@ class PythonVirtualEnvTask extends DefaultTask {
 	/**
 	 * Version of python to use in environment when using conda.
 	 * <p>
+	 * This may refer 2.7, though it is not guaranteed that all tasks will
+	 * still work (e.g. there is no coverage module in 2.7, so the coverage task
+	 * will not work out of the box under 2.7)
+	 * <p>
 	 * This is ignored if {@link #useConda} is false (the default).
+	 * <p>
+	 * @since 0.1.9
 	 */
 	@Input
 	String getPythonVersion() { stringify(_pythonVersion) }
@@ -183,6 +208,9 @@ class PythonVirtualEnvTask extends DefaultTask {
 
 	private List<Object> _repositories = []
 	
+	/**
+	 * Additional pypi repositories to search.
+	 */
 	@Input
 	List<String> getRepositories() { stringifyList(_repositories) }
 	void setRepositories(Object ... additional) {
@@ -196,6 +224,10 @@ class PythonVirtualEnvTask extends DefaultTask {
 	// -- requirements --
 
 	private List<String> _requirements = []
+	
+	/**
+	 * List of pypi requirements specifiers for packages to install.
+	 */
 	@Input
 	Set<String> getRequirements() { stringifySet(_requirements) }
 	void setRequirements(Object ... requirements) {
@@ -213,6 +245,11 @@ class PythonVirtualEnvTask extends DefaultTask {
 
 	private List<Object> _upgrades = ['pip', 'setuptools']
 
+	/**
+	 * List of packages that should be upgraded after installation.
+	 * <p>
+	 * Default is 'pip' and 'setuptools'
+	 */
 	@Input
 	List<String> getUpgrades() { stringifyList(_upgrades) }
 	void setUpgrades(Object ... upgrades) {
@@ -225,6 +262,9 @@ class PythonVirtualEnvTask extends DefaultTask {
 
 	// --- venv ---
 	
+	/**
+	 * Attributes of the python virtual environment.
+	 */
 	@Internal
 	PythonVirtualEnvSettings getVenv() { new PythonVirtualEnvSettings(this) }
 	
@@ -232,6 +272,11 @@ class PythonVirtualEnvTask extends DefaultTask {
 
 	private Object _venvDir = "${project.buildDir}/python/venv"
 
+	/**
+	 * The location of the python virtual environment for this project.
+	 * <p>
+	 * By default this is in the {@code python/venv} subdirectory of the build directory.
+	 */
 	@OutputDirectory
 	File getVenvDir() { project.file(_venvDir) }
 
@@ -241,6 +286,9 @@ class PythonVirtualEnvTask extends DefaultTask {
 	
 	private final List<Object> _sourceDirs = []
 	
+	/**
+	 * List of root source directories for python content.
+	 */
 	@Input
 	FileCollection getSourceDirs() { project.files(_sourceDirs) }
 	void setSourceDirs(Object ... dirs) { 
@@ -257,9 +305,11 @@ class PythonVirtualEnvTask extends DefaultTask {
 	 * Specifies whether to use conda-based virtual environment.
 	 * <p>
 	 * If true, then the virtual environment will be created using
-	 * conda instead of the Python 3 venv module.
+	 * conda instead of the Python 3 {@code venv} module.
 	 * <p>
 	 * The default is false.
+	 * 
+	 * @since 0.1.9
 	 */
 	@Input
 	boolean useConda = false
@@ -272,12 +322,19 @@ class PythonVirtualEnvTask extends DefaultTask {
 	 * The default is false, which is currently needed if you want
 	 * PyCharm to correctly find your virtual env directory due to
 	 * a bug (https://youtrack.jetbrains.com/issue/PY-21787).
+	 * <p>
+	 * This does not apply to the 
 	 */
 	@Input
 	boolean useSymlinks = false
 
 	// --- useSystemSitePackages ---
 	
+	/**
+	 * Specifies whether pip based virtual environment should link to system site-packages.
+	 * <p>
+	 * This can save a significant amount of space.
+	 */
 	@Input
 	boolean useSystemSitePackages = true
 	
@@ -354,6 +411,7 @@ if sys.hexversion < 0x030400F0:
 	 * Uses conda if {@link #useConda} is true otherwise uses pip.
 	 * <p>
 	 * @param requirement is a pip/conda package requirement string
+	 * @since 0.1.9
 	 */
 	void install(String requirement) {
 		if (useConda) {
@@ -365,6 +423,7 @@ if sys.hexversion < 0x030400F0:
 	
 	/**
 	 * Creates environment using conda.
+	 * @since 0.1.9
 	 */
 	void condaCreate() {
 		// Create basic environment
@@ -379,6 +438,10 @@ if sys.hexversion < 0x030400F0:
 		}
 	}
 	
+	/**
+	 * Install package using conda
+	 * @since 0.1.9
+	 */
 	void condaInstall(String requirement) {
 		ExecResult result = project.exec {
 			executable = condaExe
