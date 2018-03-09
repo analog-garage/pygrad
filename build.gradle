@@ -1,5 +1,5 @@
 /**************************************************************************
- * Copyright 2017 Analog Devices Inc.
+ * Copyright 2017-2018 Analog Devices Inc.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 plugins {
 	// Apply build-scan first - run build with -Dscan to build with a scan
-	id 'com.gradle.build-scan' version '1.6'
+	id 'com.gradle.build-scan' version '1.12.1'
 
 	// Core plugins
 	id 'java-gradle-plugin'
@@ -28,8 +28,8 @@ plugins {
 	id 'maven-publish'
 	
 	// Community plugins
-	id 'com.gradle.plugin-publish' version '0.9.7'
-	id 'com.dorongold.task-tree' version '1.2.2'
+	id 'com.gradle.plugin-publish' version '0.9.10'
+	id 'com.dorongold.task-tree' version '1.3'
 }
 
 buildScan {
@@ -86,9 +86,9 @@ publishPlugins.doFirst {
 }
 
 pluginBundle {
-	website = 'https://github.com/AnalogDevicesLyricLabs/pygrad'
-	vcsUrl = 'https://github.com/AnalogDevicesLyricLabs/pygrad'
-	description = 'A basic python plugin (not stable!)'
+	website = 'https://github.com/analog-garage/pygrad'
+	vcsUrl = 'https://github.com/analog-garage/pygrad'
+	description = 'A basic python plugin'
 	tags = ['python']
 
 	plugins {
