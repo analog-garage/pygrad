@@ -45,6 +45,14 @@ class TestPythonExtension extends PygradTestBase {
 		def python = new PythonExtension(project)
 		assert python.project == project
 		
+		// artifactoryApiKey
+		assert null == python.artifactoryApiKey
+		project.ext.setProperty('artifactoryApiKey', 'ABCdef')
+		assert 'ABCdef' == python.artifactoryApiKey
+		python.artifactoryApiKey = '12345'
+		assert '12345' == python.artifactoryApiKey
+		python.artifactoryApiKey = null
+		
 		// artifactoryBaseUrl
 		assert null == python.artifactoryBaseUrl
 		project.ext.setProperty('artifactoryUrl', 'http://frob/repo')
