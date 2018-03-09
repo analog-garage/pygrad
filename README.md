@@ -1,7 +1,7 @@
 # pygrad: a gradle plugin for python tasks
 **Version: 0.1.9**  
 *Author: Christopher Barber*  
-*Last updated: 2018-3-2*
+*Last updated: 2018-3-9*
 
 ## Introduction
 
@@ -12,13 +12,15 @@ This project provides two simple plugins for performing python tasks in a gradle
 
 It is only necessary to apply one of these plugins.
 
-**This project is under development and not yet stable!**
+**WARNING: I will attempt to maintain backward compatibility with previous releases, but there is no guarantee.**
 
 ## Requirements
 
 Developed using gradle 3.3. It probably will work with earlier 3.x versions but I have not tried it and don't promise to support earlier versions.
 
-Only supports python 3.4 and later. Tasks may work with earlier versions of python if manually configured. In particular, the implementation of the `PythonVirtualEnvTask` depends on python's venv package introduced in 3.3 and modified in 3.4. I am developing using python 3.5, so there may be other dependencies I have missed.
+Only supports python 3.4 and later. Tasks may work with earlier versions of python if manually configured. In particular, the implementation of the `PythonVirtualEnvTask` depends on python's venv package introduced in 3.3 and modified in 3.4. I am developing using python 3.5, so there may be other dependencies I have missed. If conda is used to create environment, then earlier versions of
+Python may be used, although not all tasks are guaranteed to work (e.g. the coverage task is not
+expected to work under Python 2.7).
 
 ## Applying the plugin
 
@@ -55,6 +57,9 @@ These may be configured individually but typically should be configured through 
 
 ~~~groovy
 python {
+   // Artifactory API key used for authentication in place of user and password
+   artifactoryApiKey = null
+
    // Base URL of artifactory server.
    artifactoryBaseUrl = null
    
@@ -112,6 +117,9 @@ python {
    
    // Name or path to python executable used to set up project's virtual environment.
    pythonExe = 'python3'
+
+   // Python version to use when creating conda-based environment.
+   pythonVersion = '3.6'
    
    // Additional python package repositories (i.e package index urls) for downloads.
    repositories = []
@@ -163,6 +171,39 @@ python {
 ~~~
 
 This is useful when the artifactory repository is not available temporarily (e.g. when downloading from a laptop outside the firewall).
+
+## Conda Environments
+
+By default, the plugin will create a python virtual environment using the Python 3 `venv` module 
+and will install all package requirements using pip. If you would rather use a conda-based environment,
+you should enable it using the `useConda` option and specify what version of python you want to base it
+on. The conda executable must either be in the search path or be explicitly specified using the `condaExe`
+attribute.
+
+~~~groovy
+python {
+    useConda = true
+    pythonVersion = '3.6.1'
+    // condaExe = '/usr/local/bin/conda' 
+}
+~~~
+
+When a conda environment is in use, all package requirements will be installed using `conda install`
+but will fallback on `pip install` if the package is not found. If you want to recreate an exact conda
+environment, you can save it using:
+
+~~~bash
+$ conda env export > my-environment.yml
+~~~
+
+check this into your project, and use this file to create the environment in builds:
+
+~~~groovy
+python {
+    useConda = true
+    condaEnvFile = 'my-environment.yml'
+}
+~~~
 
 
 
