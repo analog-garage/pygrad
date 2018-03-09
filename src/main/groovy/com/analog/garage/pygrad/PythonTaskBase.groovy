@@ -40,7 +40,7 @@ abstract class PythonTaskBase extends DefaultTask {
 	 * the task actions.
 	 * <p>
 	 * The default is null, but the standard pygrad plugin will automatically 
-	 * configure all tasks of this type from the environm
+	 * configure all tasks of this type from the environment
 	 */
 	@Internal
 	PythonVirtualEnvSettings getVenv() { _venv = resolveCallable(_venv) }

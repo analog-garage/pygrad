@@ -69,7 +69,7 @@ abstract class PythonModuleTaskBase extends PythonExeTaskBase {
 	void installRequirement() {
 		def env = venv
 		if (env != null && env.task != null) {
-			env.task.pipRequire(requirement)
+			env.task.install(requirement)
 		}
 	}
 	

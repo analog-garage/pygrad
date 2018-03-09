@@ -19,7 +19,7 @@ package com.analog.garage.pygrad
 import static com.analog.garage.pygrad.LazyPropertyUtils.*
 
 import org.gradle.api.tasks.*
-
+import org.gradle.util.VersionNumber
 import com.analog.garage.pygrad.PythonTaskBase
 
 /**
@@ -85,6 +85,16 @@ class SphinxDocTask extends PythonModuleTaskBase {
 	//------
 	// Task
 	//
+	
+	@Override
+	void installRequirement() {
+		// Workaround for sphinx compatibility bug (see issue #11)
+		if (requirement.equals('sphinx') && pythonVersion.compareTo(VersionNumber.parse('3.5.3')) < 0) {
+			requirement = 'sphinx<=1.7.0'
+		}
+		
+		super.installRequirement()
+	}
 	
 	@Override
 	void runTask() {

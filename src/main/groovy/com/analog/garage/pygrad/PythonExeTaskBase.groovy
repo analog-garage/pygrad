@@ -18,7 +18,7 @@ package com.analog.garage.pygrad
 
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
-
+import org.gradle.util.VersionNumber
 import com.analog.garage.pygrad.PythonTaskBase
 
 /**
@@ -41,6 +41,20 @@ class PythonExeTaskBase extends PythonTaskBase {
 	}
 	void setPythonExe(Object exe) { _pythonExe = exe }
 
+	/**
+	 * Python version
+	 */
+	VersionNumber getPythonVersion() {
+		def out = new ByteArrayOutputStream()
+		project.exec {
+			executable = pythonExe
+			args = ['-c', 'import platform;print(platform.python_version())']
+			standardOutput = out
+		}
+		
+		return VersionNumber.parse((out as String).trim())
+	}
+	
 	@Input
 	PythonVirtualEnvSettings getVenv() { super.getVenv() }
 

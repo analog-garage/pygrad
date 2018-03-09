@@ -118,6 +118,7 @@ class PythonVirtualEnvTask extends DefaultTask {
 				args += ['-v']
 		}
 
+		final boolean offline = project.gradle.startParameter.offline
 		if (offline)
 			args += ['--offline']
 			
@@ -346,6 +347,21 @@ if sys.hexversion < 0x030400F0:
 	//---------
 	// Methods
 	//
+	
+	/**
+	 * Install a package with given requirements specification
+	 * <p>
+	 * Uses conda if {@link #useConda} is true otherwise uses pip.
+	 * <p>
+	 * @param requirement is a pip/conda package requirement string
+	 */
+	void install(String requirement) {
+		if (useConda) {
+			condaInstall(requirement)
+		} else {
+			pipRequire(requirement)
+		}
+	}
 	
 	/**
 	 * Creates environment using conda.
