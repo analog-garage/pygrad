@@ -2,7 +2,11 @@
 
 ### 0.1.9
 
-- Basic support for conda environments
+- Initial support for conda environments
+- Improve Artifactory support:
+  - Support API key authentication (in place of user/password)
+  - Support way to specify properties for multiple Artifactory configurations.
+- Workaround for sphinx incompatibility bug with python 3.5.2 or earlier
 
 ### 0.1.8
 
