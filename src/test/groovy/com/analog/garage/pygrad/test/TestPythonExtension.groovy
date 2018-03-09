@@ -67,7 +67,11 @@ class TestPythonExtension extends PygradTestBase {
 		assert python.artifactoryKey == 'python-release-local'
 		python.artifactoryKey = { 'altkey' + 3 }
 		assert python.artifactoryKey == 'altkey3'
-		python.artifactoryKey = 'python-release-local'
+		project.ext.setProperty('artifactoryPythonKey', 'frob')
+		assert python.artifactoryKey == 'frob'
+		project.ext.setProperty('artifactoryPythonKey', null)
+		python.artifactoryKey = null
+		assert python.artifactoryKey == 'python-release-local'
 		
 		// artifactoryPassword
 		assert null == python.artifactoryPassword
@@ -79,6 +83,33 @@ class TestPythonExtension extends PygradTestBase {
 		python.artifactoryPassword = null
 		assert null == python.artifactoryPassword
 		
+		// artifactoryPrefix
+		assert '' == python.artifactoryPrefix
+		project.ext.setProperty('pub.artifactoryApiKey', 'ABC')
+		project.ext.setProperty('pub.artifactoryUrl', 'http://somewhere.com')
+		project.ext.setProperty('pub.artifactoryPythonKey', 'py')
+		project.ext.setProperty('pub.artifactoryUser', 'joe')
+		project.ext.setProperty('pub.artifactoryPassword', 'pwd')
+		project.ext.setProperty('dev.artifactoryApiKey', 'XYZ')
+		project.ext.setProperty('dev.artifactoryUrl', 'http://nowhere.com')
+		project.ext.setProperty('dev.artifactoryPythonKey', 'pypi')
+		project.ext.setProperty('dev.artifactoryUser', 'mary')
+		project.ext.setProperty('dev.artifactoryPassword', 'hmm')
+		python.artifactoryPrefix = 'pub.'
+		assert 'pub.' == python.artifactoryPrefix
+		assert 'ABC' == python.artifactoryApiKey
+		assert 'http://somewhere.com' == python.artifactoryBaseUrl
+		assert 'joe' == python.artifactoryUser
+		assert 'pwd' == python.artifactoryPassword
+		assert 'py' == python.artifactoryKey
+		python.artifactoryPrefix = 'dev.'
+		assert 'XYZ' == python.artifactoryApiKey
+		assert 'http://nowhere.com' == python.artifactoryBaseUrl
+		assert 'mary' == python.artifactoryUser
+		assert 'hmm' == python.artifactoryPassword
+		assert 'pypi' == python.artifactoryKey
+		python.artifactoryPrefix = ''
+
 		// artifactoryUser
 		assert null == python.artifactoryUser
 		project.ext.setProperty('artifactoryUser', 'jdoe')
@@ -108,6 +139,18 @@ class TestPythonExtension extends PygradTestBase {
 		assert ['one', 'two', '3'] == python.buildRequirements
 		python.buildRequirements = []
 		assert [] == python.buildRequirements
+		
+		// condaEnvFile
+		assert null == python.condaEnvFile
+		python.condaEnvFile = 'conda.yml'
+		assert project.file('conda.yml') == python.condaEnvFile
+		python._condaEnvFile = null
+		
+		// condaExe
+		assert 'conda' == python.condaExe
+		python.condaExe = { '/usr/local/bin/conda' }
+		assert '/usr/local/bin/conda' == python.condaExe
+		python.condaExe = 'conda'
 		
 		// coverageDir
 		assert new File(python.buildDir, 'coverage') == python.coverageDir
@@ -204,6 +247,12 @@ class TestPythonExtension extends PygradTestBase {
 		assert 'python3' == python.pythonExe
 		python.pythonExe = { 'python3.5' }
 		assert 'python3.5' == python.pythonExe
+		
+		// pythonVersion
+		assert '3.6' == python.pythonVersion
+		python.pythonVersion = '2.7'
+		assert '2.7' == python.pythonVersion
+		python.pythonVersion = '3.6'
 		
 		// repositories
 		assert [] == python.repositories

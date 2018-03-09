@@ -71,26 +71,7 @@ class PythonExtension {
 	
 	void setArtifactoryApiKey(Object key) { _artifactoryApiKey = key }
 	
-	// --- artifactoryPrefix ---
-	
-	private Object _artifactoryPrefix = ''
-	
-	/**
-	 * Prefix for artifactory related global properties.
-	 * <p>
-	 * This is prepended to the property names used by {@link #artifactoryUser},
-	 * {@link #artifactoryPassword}, {@link #artifactoryPythonKey} and {@link #artifactoryApiKey}.
-	 * It can be used to support multiple artifactory configurations with different 
-	 * authentication information.
-	 * <p>
-	 * The default is the empty string ''.
-	 * <p>
-	 * @since 0.1.9
-	 */
-	String getArtifactoryPrefix() { stringify(_artifactoryPrefix) }
-	void setArtifactoryPrefix(Object prefix) { _artifactoryPrefix = prefix }
-	
-	// --- artifactoryUrl ---
+	// --- artifactoryBaseUrl ---
 	
 	private Object _artifactoryBaseUrl = null
 	
@@ -148,6 +129,25 @@ class PythonExtension {
 	 * Sets {@link #getArtifactoryKey artifactoryKey}
 	 */
 	void setArtifactoryKey(Object key) { _artifactoryKey = key }
+	
+	// --- artifactoryPrefix ---
+	
+	private Object _artifactoryPrefix = ''
+	
+	/**
+	 * Prefix for artifactory related global properties.
+	 * <p>
+	 * This is prepended to the property names used by {@link #artifactoryUser},
+	 * {@link #artifactoryPassword}, {@link #artifactoryPythonKey} and {@link #artifactoryApiKey}.
+	 * It can be used to support multiple artifactory configurations with different 
+	 * authentication information.
+	 * <p>
+	 * The default is the empty string ''.
+	 * <p>
+	 * @since 0.1.9
+	 */
+	String getArtifactoryPrefix() { stringify(_artifactoryPrefix) }
+	void setArtifactoryPrefix(Object prefix) { _artifactoryPrefix = prefix }
 	
 	// --- artifactoryUrl ---
 	
