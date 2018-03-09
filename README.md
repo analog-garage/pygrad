@@ -205,6 +205,41 @@ python {
 }
 ~~~
 
+## Artifactory hosted PyPi repositories
+
+This plugin supports deployment to Artifactory hosted pypi repositories using [Artifactory's
+REST API](https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API). To use it,
+you must configure the URL of the repository, the name of the python repository subdirectory,
+and authentication credentials for the Artifactory instance. 
+
+Since the configuration is typically
+shared across projects and the authentication information is often per-user, it is best to define
+these as properties in the user's `gradle.properties` file, which is usually located in the `.gradle/`
+subdirectory of the user's home directory. It is advisable to restrict the access permissions on this
+file so that other's cannot see the authentication information. To support multiple artifactory configurations,
+you can use a string prefix to denote the different configurations. Authentication can be done either via
+username/password or through an API key configured on the server. API keys are recommended whenever the password
+is shared with other accounts (which may happen implicitly if the server is configured for LDAP).
+
+For instance, given the following settings in a properties file:
+
+~~~ini
+# Configuration for internal Artifactory repository
+dev.artifactoryUrl=https://artifactory.mycompany.com/artifactory
+dev.artifactoryPythonKey=python
+dev.artifactoryApiKey=ABCDEF...XYZ
+~~~
+
+The `build.gradle` would only need to specify:
+
+~~~groovy
+python {
+   artifactoryPrefix = 'dev.'
+}
+~~~
+
+Building the `artifactoryPublishPython` task will upload the outputs of the `pydist` task
+to the specified directory on the Artifactory server.
 
 
 
