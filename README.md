@@ -57,6 +57,9 @@ These may be configured individually but typically should be configured through 
 
 ~~~groovy
 python {
+   // Prefix to use for looking up artifactory related properties
+   artifactoryPrefix = ''
+   
    // Artifactory API key used for authentication in place of user and password
    artifactoryApiKey = null
 
@@ -239,7 +242,9 @@ python {
 ~~~
 
 Building the `artifactoryPublishPython` task will upload the outputs of the `pydist` task
-to the specified directory on the Artifactory server.
+to the specified directory on the Artifactory server. Note that the `artifactoryPrefix`
+attribute should be defined before any other `artifactory*` attributes appear
+in the file since they may depend on it.
 
 
 
