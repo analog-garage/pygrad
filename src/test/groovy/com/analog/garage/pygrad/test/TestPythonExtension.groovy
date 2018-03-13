@@ -140,6 +140,15 @@ class TestPythonExtension extends PygradTestBase {
 		python.buildRequirements = []
 		assert [] == python.buildRequirements
 		
+		// condaChannels
+		assert [] == python.condaChannels
+		python.condaChannels 'conda-forge'
+		assert ['conda-forge'] == python.condaChannels
+		python.condaChannels'nodefaults'
+		assert ['conda-forge', 'nodefaults'] == python.condaChannels
+		python.condaChannels = []
+		assert [] == python.condaChannels
+
 		// condaEnvFile
 		assert null == python.condaEnvFile
 		python.condaEnvFile = 'conda.yml'

@@ -45,6 +45,28 @@ class PythonVirtualEnvTask extends DefaultTask {
 	// Properties
 	//
 
+	// --- condaChannels ---
+	
+	private List<Object> _condaChannels = []
+	
+	/**
+	 * Additional conda channels to search.
+	 * <p>
+	 * A popular choice is {@code 'conda-forge'}. The name 'nodefaults'
+	 * will cause default channels from being considered.
+	 * <p>
+	 * @since 0.1.10
+	 */
+	@Input
+	List<String> getCondaChannels() { stringifyList(_condaChannels) }
+	void setCondaChannels(Object ... additional) {
+		_condaChannels.clear()
+		addToListFromVarargs(_condaChannels, additional)
+	}
+	void condaChannels(Object channel, Object ... additional) {
+		addToListFromVarargs1(_condaChannels, channel, additional)
+	}
+	
 	// --- condaEnvFile ---
 	
 	private Object _condaEnvFile
@@ -137,10 +159,25 @@ class PythonVirtualEnvTask extends DefaultTask {
 				args += ['-v']
 		}
 
+		for (String channel in condaChannels) {
+			if (channel == 'nodefaults') {
+				args += ['--override-channels']
+			} else {
+				args += ['--channel', channel]
+			}
+		}
+		
 		final boolean offline = project.gradle.startParameter.offline
 		if (offline)
 			args += ['--offline']
 			
+		return args
+	}
+	
+	@Internal
+	List<String> getCondaUpdateArgs() {
+		def args = condaInstallArgs
+		args[0] = 'update'
 		return args
 	}
 	
@@ -243,12 +280,12 @@ class PythonVirtualEnvTask extends DefaultTask {
 
 	// --- upgrades ---
 
-	private List<Object> _upgrades = ['pip', 'setuptools']
+	private List<Object> _upgrades = []
 
 	/**
 	 * List of packages that should be upgraded after installation.
 	 * <p>
-	 * Default is 'pip' and 'setuptools'
+	 * 'pip' and 'setuptools' will automatically be upgraded if not using conda
 	 */
 	@Input
 	List<String> getUpgrades() { stringifyList(_upgrades) }
@@ -392,12 +429,15 @@ if sys.hexversion < 0x030400F0:
 
 		def venv = new PythonVirtualEnvSettings(venvDir)
 
-		for (pkg in upgrades) {
-			pipUpgrade(pkg)
-		}
-
+		pipUpgrade('pip')
+		pipUpgrade('setuptools')
+		
 		for (requirement in requirements) {
 			pipRequire(requirement)
+		}
+
+		for (pkg in upgrades) {
+			pipUpgrade(pkg)
 		}
 	}
 	
@@ -422,16 +462,36 @@ if sys.hexversion < 0x030400F0:
 	}
 	
 	/**
+	 * Update given requirement to latest version.
+	 * <p>
+	 * Uses conda if {@link #useConda} is true otherwise uses pip.
+	 * <p>
+	 * @param requirement is a pip/conda package requirement string
+	 * @since 0.1.10
+	 */
+	void update(String requirement) {
+		if (useConda) {
+			condaUpdate(requirement)
+		} else {
+			pipUpgrade(requirement)
+		}
+	}
+	
+	/**
 	 * Creates environment using conda.
 	 * @since 0.1.9
 	 */
 	void condaCreate() {
 		// Create basic environment
-		project.exec {
-			executable = condaExe
-			args = condaCreateArgs
+		if (venvDir.exists()) {
+			condaInstall('python='+pythonVersion)
+		} else {
+			project.exec {
+				executable = condaExe
+				args = condaCreateArgs
+			}
 		}
-		
+				
 		// Then add requirements
 		for (requirement in requirements) {
 			condaInstall(requirement)
@@ -453,6 +513,24 @@ if sys.hexversion < 0x030400F0:
 			// If conda doesn't work, try pip.
 			// TODO - look at actual error message
 			pipRequire(requirement)
+		}
+	}
+	
+	/**
+	 * Update package using conda
+	 * @since 0.1.10
+	 */
+	void condaUpdate(String requirement) {
+		ExecResult result = project.exec {
+			executable = condaExe
+			args = condaUpdateArgs + [requirement]
+			ignoreExitValue = true
+		}
+		
+		if (result.exitValue != 0) {
+			// If conda doesn't work, try pip.
+			// TODO - look at actual error message
+			pipUpgrade(requirement)
 		}
 	}
 	

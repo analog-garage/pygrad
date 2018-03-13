@@ -271,6 +271,27 @@ class PythonExtension {
 		addToListFromVarargs1(_buildRequirements, first, additional)
 	}
 
+	// --- condaChannels ---
+	
+	private List<Object> _condaChannels = []
+	
+	/**
+	 * Additional conda channels to search.
+	 * <p>
+	 * A popular choice is {@code 'conda-forge'}. The name 'nodefaults'
+	 * will cause default channels from being considered.
+	 * <p>
+	 * @since 0.1.10
+	 */
+	List<String> getCondaChannels() { stringifyList(_condaChannels) }
+	void setCondaChannels(Object ... additional) {
+		_condaChannels.clear()
+		addToListFromVarargs(_condaChannels, additional)
+	}
+	void condaChannels(Object channel, Object ... additional) {
+		addToListFromVarargs1(_condaChannels, channel, additional)
+	}
+	
 	// --- condaEnvFile ---
 	
 	private Object _condaEnvFile = null

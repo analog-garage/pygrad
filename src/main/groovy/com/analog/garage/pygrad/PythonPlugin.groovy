@@ -130,6 +130,7 @@ class PythonPlugin implements Plugin<Project> {
 			{
 				condaExe = pyext.condaExe
 				useConda = pyext.useConda
+				condaChannels pyext.condaChannels
 				condaEnvFile = pyext.condaEnvFile
 				pythonExe = pyext.pythonExe
 				pythonVersion = pyext.pythonVersion

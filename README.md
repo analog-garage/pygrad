@@ -1,7 +1,7 @@
 # pygrad: a gradle plugin for python tasks
 **Version: 0.1.10**  
 *Author: Christopher Barber*  
-*Last updated: 2018-3-9*
+*Last updated: 2018-3-13*
 
 ## Introduction
 
@@ -83,6 +83,9 @@ python {
    // Python requirements needed for building/testing but not for runtime distribution.
    buildRequirements = []
    
+   // Extra channels to use with conda. 'nodefaults' excludes default channels.
+   condaChannels = []
+
    // Path to optional conda YAML environment file
    condaEnvFile = null
 
@@ -192,8 +195,16 @@ python {
 ~~~
 
 When a conda environment is in use, all package requirements will be installed using `conda install`
-but will fallback on `pip install` if the package is not found. If you want to recreate an exact conda
-environment, you can save it using:
+but will fallback on `pip install` if the package is not found. You can add additional conda channels and optionally skip the default channels using the `condaChannels` property:
+
+~~~groovy
+python {
+    useConda = true
+    condaChannels 'conda-forge', 'nodefaults'
+}
+~~~
+
+If you want to recreate an exact conda environment, you can save it using:
 
 ~~~bash
 $ conda env export > my-environment.yml

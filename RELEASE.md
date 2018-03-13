@@ -2,7 +2,9 @@
 
 ### 0.1.10
 
-**TBD**
+- Support custom conda channels
+- Support upgrades for conda packages
+- Fix problem with conda environment creation when directory exists (bug #13)
 
 ### 0.1.9
 
