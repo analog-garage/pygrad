@@ -535,10 +535,20 @@ if sys.hexversion < 0x030400F0:
 	}
 	
 	void pipUpgrade(String pkg) {
-		def installArgs = pipInstallArgs + ['--upgrade', pkg]
-		project.exec {
-			executable = venv.pipExe
-			args = installArgs
+		// If we are upgrading pip, do it this way...makes it work for Python3 on Windows 10
+		// (and probably all other platforms)
+		if (pkg == 'pip'){
+			def installArgs = ['-m', 'pip', 'install', '--upgrade', 'pip']
+			project.exec {
+				executable = venv.pythonExe
+				args = installArgs
+			}
+		} else {
+			def installArgs = pipInstallArgs + ['--upgrade', pkg]
+			project.exec {
+				executable = venv.pipExe
+				args = installArgs
+			}
 		}
 	}
 	
